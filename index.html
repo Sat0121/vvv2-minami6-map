@@ -1,0 +1,539 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>南6条店 ヴァルヴレイヴ2 台マップ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;900&family=DotGothic16&family=Space+Mono:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: 片手操作の縦1カラム。下部タブで マップ/台/日付 を切替。白黒のドット表示に赤1色 */
+:root {
+  --bg: #f1f1ee; --surface: #ffffff; --fg: #0c0c0c; --muted: #66666a; --line: #c9c9c6; --dot: #d3d3cf;
+  --red: #d71921; --red-ink: #ffffff; --select: #0c0c0c;
+  --h4: #0c0c0c; --h4-ink: #ffffff; --h3: #a9a9a7; --h3-ink: #0c0c0c; --h2: #dadad7; --h2-ink: #2b2b2b; --h1: #ffffff; --h1-ink: #6a6a6a;
+  --none: #e7e7e4; --none-ink: #8a8a88; --pill-on: #0c0c0c; --pill-on-ink: #ffffff;
+  --doto: "Doto", "DotGothic16", "Space Mono", monospace; --jp-dot: "DotGothic16", "Noto Sans JP", sans-serif;
+  --mono: "Space Mono", ui-monospace, "SF Mono", Menlo, monospace; --body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #000000; --surface: #111111; --fg: #f4f4f2; --muted: #9a9a9a; --line: #333333; --dot: #1f1f1f;
+  --red: #e5212b; --red-ink: #ffffff; --select: #ffffff;
+  --h4: #f4f4f2; --h4-ink: #000000; --h3: #6d6d6d; --h3-ink: #ffffff; --h2: #303030; --h2-ink: #e4e4e4; --h1: #141414; --h1-ink: #a2a2a2;
+  --none: #1b1b1b; --none-ink: #777777; --pill-on: #f4f4f2; --pill-on-ink: #000000; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #000000; --surface: #111111; --fg: #f4f4f2; --muted: #9a9a9a; --line: #333333; --dot: #1f1f1f;
+  --red: #e5212b; --red-ink: #ffffff; --select: #ffffff;
+  --h4: #f4f4f2; --h4-ink: #000000; --h3: #6d6d6d; --h3-ink: #ffffff; --h2: #303030; --h2-ink: #e4e4e4; --h1: #141414; --h1-ink: #a2a2a2;
+  --none: #1b1b1b; --none-ink: #777777; --pill-on: #f4f4f2; --pill-on-ink: #000000; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg) radial-gradient(var(--dot) 1px, transparent 1.2px) 0 0 / 14px 14px; color: var(--fg); font: 400 15px/1.65 var(--body); font-variant-numeric: tabular-nums; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+.page { max-width: 620px; margin: 0 auto; padding-block: 16px 104px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.page.has-sheet { padding-bottom: 400px; }
+.top { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; margin-bottom: 14px; }
+h1 { margin: 0; font: 900 clamp(30px, 10vw, 44px)/1 var(--doto); letter-spacing: .01em; }
+.top small { font: 400 11px/1.4 var(--mono); color: var(--muted); text-align: right; }
+.label { font: 400 11px/1.4 var(--mono); letter-spacing: .08em; color: var(--muted); }
+section[hidden] { display: none; }
+.view { display: grid; gap: 14px; }
+.dates { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 2px max(16px, env(safe-area-inset-left, 0px)); }
+.dates::-webkit-scrollbar { display: none; }
+.date { flex: none; min-width: 58px; min-height: 48px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 24px; background: var(--surface); display: grid; justify-items: center; line-height: 1.15; cursor: pointer; font-family: var(--mono); font-size: 13px; }
+.date span { font-size: 10px; color: var(--muted); }
+.date.hot span { color: var(--red); font-weight: 700; }
+.date[aria-pressed="true"] { background: var(--pill-on); color: var(--pill-on-ink); border-color: var(--pill-on); }
+.date[aria-pressed="true"] span { color: inherit; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); padding: 3px; }
+.seg button { flex: 1; min-height: 38px; border: 0; background: none; border-radius: 19px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--pill-on); color: var(--pill-on-ink); }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.stat { background: var(--surface); padding: 10px; display: grid; gap: 2px; min-width: 0; }
+.stat b { font: 900 clamp(20px, 6.2vw, 28px)/1.1 var(--doto); white-space: nowrap; }
+.stat b.red { color: var(--red); }
+.map-card { margin-inline: -6px; }
+svg#map { display: block; width: 100%; height: auto; touch-action: manipulation; }
+.cell { cursor: pointer; }
+.cell path { stroke: var(--bg); stroke-width: 3; }
+.cell text { text-anchor: middle; dominant-baseline: central; pointer-events: none; font-family: var(--mono); }
+.cell .no { font-size: 24px; font-weight: 700; }
+.cell .val { font-size: 22px; }
+.cell.sel path { stroke: var(--red); stroke-width: 7; }
+.cell:focus { outline: none; }
+.cell:focus-visible path { stroke: var(--red); stroke-width: 7; }
+.cell.dim { opacity: .18; }
+.ghost { fill: none; stroke: var(--line); stroke-width: 2; stroke-dasharray: 2 8; stroke-linecap: round; }
+.ghost-label { fill: var(--muted); font: 400 16px var(--mono); text-anchor: middle; dominant-baseline: central; }
+.pillar { fill: none; stroke: var(--line); stroke-width: 2; stroke-dasharray: 2 6; stroke-linecap: round; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 12px; list-style: none; margin: 0; padding: 0; font: 400 11px/1.4 var(--mono); color: var(--muted); }
+.legend li { display: flex; align-items: center; gap: 5px; }
+.legend i { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--line); }
+.note { margin: 0; font-size: 12px; color: var(--muted); }
+
+.sheet { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(62px + env(safe-area-inset-bottom, 0px)); width: min(620px, 100%); z-index: 6; background: var(--surface); border: 1px solid var(--line); border-radius: 18px 18px 0 0; padding: 14px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); display: grid; gap: 8px; max-height: 66vh; overflow-y: auto; box-shadow: 0 -8px 26px rgb(0 0 0 / .22); }
+.sheet-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding-right: 40px; }
+.sheet-no { font: 900 38px/1 var(--doto); }
+.sheet-where { font-size: 12px; color: var(--muted); }
+#sheetClose { position: absolute; top: 6px; right: 6px; width: 44px; height: 44px; border: 0; background: none; font-size: 20px; cursor: pointer; color: var(--muted); }
+.spark { display: block; width: 100%; height: auto; }
+.tag { display: inline-block; padding: 0 8px; border-radius: 10px; font: 700 11px/1.7 var(--mono); background: var(--red); color: var(--red-ink); }
+.tag.out { background: none; color: var(--muted); border: 1px solid var(--line); }
+
+.search { display: flex; gap: 8px; align-items: center; }
+.search input { flex: 1; min-width: 0; min-height: 44px; border: 1px solid var(--line); border-radius: 22px; padding: 0 16px; background: var(--surface); color: var(--fg); font: 400 16px var(--mono); }
+.sorts { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.sorts::-webkit-scrollbar { display: none; }
+.sorts button { flex: none; min-height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); font-size: 12px; cursor: pointer; }
+.sorts button[aria-pressed="true"] { background: var(--pill-on); color: var(--pill-on-ink); border-color: var(--pill-on); }
+.rows { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.row { display: grid; grid-template-columns: 22px 62px minmax(0, 1fr) 62px; gap: 6px; align-items: center; min-height: 54px; padding: 6px 10px; background: var(--surface); border: 0; text-align: left; cursor: pointer; width: 100%; }
+.row .pos { font: 400 11px var(--mono); color: var(--muted); }
+.row .num { font: 700 16px var(--mono); }
+.row .val { font: 900 20px/1 var(--doto); text-align: right; white-space: nowrap; }
+.row .val.red { color: var(--red); }
+.strip { display: block; width: 100%; height: 14px; }
+.matrix-wrap { overflow-x: auto; }
+svg#matrix { display: block; width: 100%; height: auto; }
+#matrix text { fill: var(--muted); font: 400 9px var(--mono); }
+#matrix .rowhit { cursor: pointer; fill: transparent; }
+.chart { display: block; width: 100%; height: auto; }
+.chart text { fill: var(--muted); font: 400 10px var(--mono); }
+.day-list .row { grid-template-columns: 76px minmax(0, 1fr) 56px 60px; }
+.day-list .hint2 { font: 400 11px var(--mono); color: var(--muted); }
+
+h2 { margin: 0; font: 400 19px/1.4 var(--jp-dot); text-wrap: balance; }
+.block { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
+.block p { margin: 0; }
+ul.plain { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font: 400 11px var(--mono); color: var(--muted); padding: 4px 6px 4px 0; border-bottom: 1px solid var(--line); }
+td { padding: 7px 6px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.n { font-family: var(--mono); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+a { color: inherit; }
+
+.why { font: 400 11px/1.4 var(--mono); color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 7; background: var(--bg); border-top: 1px solid var(--line); padding: 6px max(10px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)); }
+nav.tabs div { max-width: 620px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+nav.tabs button { min-height: 48px; border: 0; background: none; border-radius: 24px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; }
+nav.tabs button[aria-current="page"] { background: var(--pill-on); color: var(--pill-on-ink); }
+</style>
+
+<main class="page" id="page">
+  <div class="top">
+    <h1>VALVRAVE 2</h1>
+    <small>南6条店 46枚<br><span id="range"></span></small>
+  </div>
+
+  <section class="view" id="v-map">
+    <div class="dates" id="dates" role="group" aria-label="日付"></div>
+    <div class="stats" id="dayStats"></div>
+    <div class="seg" role="group" aria-label="マップの表示内容">
+      <button id="mExp" type="button" aria-pressed="true">期待度</button>
+      <button id="mDay" type="button" aria-pressed="false">この日の差枚</button>
+      <button id="mAll" type="button" aria-pressed="false"><span class="nd"></span>日の機械割</button>
+    </div>
+    <div class="map-card"><svg id="map" viewBox="-445 -445 890 960" role="img" aria-label="台の配置図。案内図と同じ向き"></svg></div>
+    <ul class="legend" id="legend"></ul>
+    <p class="note">期待度は回転数ワースト1・2と差枚ワースト1・2(過去1〜9日)だけで計算し、当てはまる条件のうち一番高い機械割を表示しています。灰色はどの条件にも当てはまらない台です。セル内の差枚は千枚単位です(+18.7 = 約+18,700枚)。正確な値は台をタップすると出ます。2218は差枚表にありますが、店内の位置が未確認のため左下に別枠で表示しています。</p>
+  </section>
+
+  <section class="view" id="v-machines" hidden>
+    <div class="block" id="picks"></div>
+    <div class="search"><input id="q" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="台番検索 1350" aria-label="台番検索"></div>
+    <div class="sorts" id="sorts" role="group" aria-label="並び順"></div>
+    <div class="rows" id="machineList"></div>
+    <p class="note">帯の点は左から古い日付順です。赤は+5,000枚以上。機械割は 1＋差枚÷(回転数×3) で計算しています。11/04〜11/06は台ごとの回転数がないため、その3日は台の機械割の計算から外しています。1351は10/21に回転数と合わない値があり、＊を付けています。</p>
+  </section>
+
+  <section class="view" id="v-days" hidden>
+    <div class="block">
+      <span class="label">DAILY PAYOUT / 全台の機械割 赤 = 105%以上</span>
+      <svg class="chart" id="dayChart" viewBox="0 0 360 150" role="img" aria-label="日別の機械割"></svg>
+    </div>
+    <div class="block">
+      <span class="label">MATRIX / 赤 = +5,000枚以上</span>
+      <div class="matrix-wrap"><svg id="matrix" role="img" aria-label="台と日付の差枚ドット"></svg></div>
+    </div>
+    <div class="rows day-list" id="dayList"></div>
+    <p class="note">42台×35日分(10/10〜11/18、11/07〜11/09は未取得)を反映。日別の平均差枚、平均回転数、勝率は元サイトの集計と照合済みです。11/04〜11/06は差枚のみで、回転数は日別平均を使っています。1351の10/21(+19,000枚 / 737G)は純増と合わないため要確認です。</p>
+  </section>
+
+</main>
+
+<aside class="sheet" id="sheet" hidden aria-live="polite"></aside>
+
+<nav class="tabs" aria-label="画面"><div>
+  <button type="button" data-v="map">マップ</button>
+  <button type="button" data-v="machines">台</button>
+  <button type="button" data-v="days">日付</button>
+</div></nav>
+
+<script>
+const SRC = {"dates":["10/10","10/13","10/14","10/15","10/16","10/17","10/18","10/19","10/20","10/21","10/22","10/23","10/24","10/25","10/26","10/27","10/28","10/29","10/30","10/31","11/01","11/02","11/03","11/04","11/05","11/06"],"dayGames":{"11/04":3660,"11/05":3438,"11/06":5360},"m":{"1311":[[-4617,-347,125,-4917,-239,4683,278,-872,1472,-3922,-1461,-3922,-1789,-2183,-1683,-3056,3917,100,6244,972,-2722,1211,-239,-2322,1189,-2250],[6363,1368,1816,7557,2308,2586,6459,4106,1648,2951,3836,3773,6549,6636,2684,2151,6261,4328,3594,8183,4215,3201,6709,null,null,null]],"1312":[[-3878,-292,-1428,11317,-1928,-1011,-3389,13339,-225,-828,3122,-1233,9083,-1361,-1150,153,-3211,-2433,1211,-1306,2317,-1983,386,-3256,3783,-2078],[4188,439,2124,7691,1659,8625,6481,5135,607,2030,2649,4076,6603,5379,752,1155,4334,3365,6488,2345,7014,1635,7773,null,null,null]],"1313":[[-3950,792,-994,4150,-1011,-1961,-2456,114,-239,-106,-458,-2278,4317,-1394,-769,3833,-1194,-1494,1161,-1117,-1550,-53,18722,281,4117,16850],[7427,914,2284,8364,3870,2742,7543,4717,2120,3186,447,9225,7934,1288,534,3153,6341,2927,2721,4479,1602,2117,6123,null,null,null]],"1315":[[-1856,-2033,-153,1033,-1967,-2944,4250,5517,-2411,408,3817,-856,8500,11900,5667,-1028,-2922,-3233,-2567,-3633,483,-2433,-3050,-2278,-2144,3233],[5401,7694,350,7961,1941,4371,7166,3454,2068,582,5881,4291,7249,5299,2396,3415,5584,4535,3195,3152,7318,4456,7853,null,null,null]],"1316":[[-1744,1883,-792,10900,-3033,39,2478,5311,2833,-925,1872,-1517,-2144,1189,2611,-1117,-1483,8250,-975,-2211,1161,13494,-4517,-697,-1006,-3367],[5900,1238,896,7414,2095,3046,6997,6009,1497,750,3323,2267,5510,4284,2254,766,4539,5752,4137,4399,7656,7292,7822,null,null,null]],"1317":[[6861,0,-1172,13822,-339,2922,2011,3789,739,-1006,-1233,-2433,1367,-494,4417,-1339,7917,2033,1139,-2478,12950,-519,12561,-250,-3122,1761],[5935,421,1887,6904,4322,5988,7379,5799,930,647,6178,3477,7890,5133,1563,1551,7248,4900,1802,4028,6398,550,6094,null,null,null]],"1333":[[-6156,-586,-842,-1700,5817,-850,-206,-3722,-2856,-3367,-2811,-2983,811,-414,2883,78,2006,-2744,-1628,-3500,-3678,-2700,-7489,-1589,-4217,-1806],[5975,1237,1228,8997,3720,2398,6883,5676,3520,3712,3439,5740,7644,8026,3487,5277,7198,3629,1297,6072,3535,2903,8384,null,null,null]],"1335":[[-2767,-908,-2056,117,-3811,-5450,2717,522,5889,-894,-742,8417,-5183,922,-1278,-1428,-3233,7089,-492,-3789,-883,-1817,1656,5683,1883,-2817],[6036,771,2513,8388,3106,5961,7938,6175,3872,2176,2717,2420,8490,3281,2227,975,4010,5543,1347,5138,4358,1170,7341,null,null,null]],"1336":[[17950,3389,-1739,1611,-1583,-4950,6861,1306,-108,-1894,1450,-2411,16650,1750,-969,2278,-1294,-2011,-500,-3717,-2344,-217,1789,5133,2633,-4783],[4724,5174,1102,7685,1312,4162,7057,2961,323,2062,5732,3665,7821,6417,932,2699,5806,5428,4619,7265,1785,4990,7251,null,null,null]],"1337":[[-4350,28,3500,-2256,256,-561,-4217,1300,-1139,503,217,1228,-100,-1794,1544,-3300,2650,-2233,-1250,-3122,-928,3383,-2211,1228,-2478,-4050],[5701,422,3422,7850,5445,2036,5080,2587,4030,636,2821,6431,4804,2048,5574,4275,7729,2295,2939,7801,4285,4333,7761,null,null,null]],"1338":[[-3011,-531,-1306,6600,-1361,2633,-4017,-1683,172,-1083,-1050,-1433,3700,-3656,-686,2811,-2300,-1094,-769,-2522,-919,1639,5550,-4083,-3856,-1017],[5069,527,1221,8145,3616,5347,6978,2378,3851,1759,1165,6311,6293,5010,2682,6156,2116,4209,821,8246,1199,3902,6710,null,null,null]],"1350":[[611,-1506,-2233,2883,-3278,-686,-3633,1328,-2900,719,-1072,8194,-3783,1750,447,-2211,15689,2100,-1772,-1294,3400,-783,18611,-1072,-2122,15067],[6092,1105,2991,6495,4857,2718,7211,3600,6214,2069,1644,5808,6274,8081,557,2103,6999,5093,2122,2943,6906,4283,2606,null,null,null]],"1351":[[-6911,-1294,153,-1367,-1472,17950,-594,-1461,-686,19000,3783,-1006,9306,1011,608,-389,-3722,1789,7361,-1211,-500,-1272,4383,-372,-1883,-1833],[7724,1498,1908,6866,2307,5830,7205,2420,490,737,6128,2739,5073,4333,2261,3615,7690,4600,4209,2974,2306,2600,7773,null,null,null]],"1352":[[-2078,1722,186,-2544,-2167,-2500,-2700,9361,2700,-2833,-897,-3078,8028,-2344,594,-1306,-4850,-3656,-1750,-3700,8472,-1361,-850,-4483,-2389,-700],[6939,5308,1443,7908,3167,4233,7371,5343,2099,3351,971,4859,6283,6607,1841,3003,6206,3483,3402,7257,7148,3461,7276,null,null,null]],"1353":[[-4950,-2056,-1194,11706,-1306,-1883,9300,5650,1878,2611,-2322,-1539,-1944,5361,-2544,-1883,-3083,-1839,1122,-1900,-100,-1050,-1211,-194,11300,16250],[6048,6351,847,6596,1995,1818,6176,4814,3532,2974,1708,4654,7699,4662,2613,2031,5342,5958,4065,2462,6985,1249,7612,null,null,null]],"1355":[[-722,-1583,-131,16050,-1661,-3011,-194,678,-7889,-2100,5861,1850,4617,-506,-1361,-1461,-2144,2450,2033,-2078,256,-1039,5817,-458,-1472,2233],[8007,1655,2111,7280,4033,2786,7088,5374,9150,1729,6554,5036,7830,5746,1871,1295,4549,5349,2863,5256,7139,2735,7379,null,null,null]],"1356":[[-817,-136,-486,-4783,261,-100,-850,-472,-214,-2878,-2100,4117,-1678,-1206,-3878,1456,8028,-103,-2944,17450,-1028,-2967,18722,10617,-1672,-300],[6067,618,1694,8439,2166,3510,8505,4661,837,2349,2134,7848,6438,5556,4001,5352,7163,2265,3293,6102,5910,2545,7648,null,null,null]],"1357":[[-1317,958,-958,-3456,-2033,-2322,8194,-2944,-347,-1150,17050,-1828,5483,-2522,-2500,722,-1883,-1944,3011,6083,3589,2017,5267,-1672,-481,-56],[5931,602,1267,8631,2343,3352,6908,4206,630,1864,4949,4879,6888,3460,4546,3229,5150,3206,3953,7749,6918,4531,6404,null,null,null]],"1358":[[6156,5817,-153,-7178,-1572,211,1350,-4250,-197,4450,1861,-364,-3811,-728,-728,-517,522,-1806,-4017,-2811,-2500,7917,-389,2967,-1989,-3411],[5490,6049,129,7225,2398,5330,8080,4390,205,2142,3572,3439,6636,4410,3208,1585,8718,3035,3596,4897,2178,4567,6764,null,null,null]],"1360":[[594,-581,5133,5178,-764,-2922,3817,3683,-2033,283,-1672,-858,1233,706,-886,3267,50,-325,-1950,-2078,-3389,-1728,-2744,-1539,-864,-3300],[6008,751,5622,8744,801,2595,7663,4899,1654,4002,1686,2740,7578,4876,2911,4634,7041,3067,3091,7300,3662,2965,9349,null,null,null]],"1361":[[7489,1594,-1694,139,694,3783,-550,3456,-758,-2367,-2078,-1528,-194,-3011,-806,-2233,-7583,1856,-633,-2500,-2989,-2944,1233,-219,-1272,1989],[6383,1836,4101,7665,1609,5964,8542,2965,1774,3310,3910,5661,4385,2926,1588,3679,8192,4186,6466,7343,5957,4100,8027,null,null,null]],"1362":[[-4483,817,-1472,-744,653,3789,-3833,1833,-2322,-1344,3833,-4083,1239,3967,-1561,6028,3633,-2989,8250,-1544,0,-1883,-2767,594,1006,-944],[6642,4575,1384,7519,2349,4718,8676,5024,3577,4312,5190,4919,7495,2584,1457,4925,7667,2996,4322,6958,5167,2978,7600,null,null,null]],"1363":[[5472,-1639,-275,-1167,-1572,-2567,5450,1517,-283,-411,3611,4022,11433,2367,-1028,-3522,-1256,-1450,-592,-250,-2589,6778,13289,-1722,-1428,-2789],[7378,2253,231,6997,2019,2625,7810,6126,4696,1718,1351,6668,6048,6083,8232,4698,7137,2470,1013,7086,5236,6388,7194,null,null,null]],"1365":[[7306,681,2433,-2322,-1006,-3478,-2967,-4950,-1150,-2211,4417,9417,-3256,2522,1811,-1317,-3344,483,-1300,-2344,-4050,-3767,-1567,-1039,-175,5044],[6455,1555,5954,8754,1576,3537,8779,4675,2120,1531,6849,7751,4854,5211,2762,3174,4942,4081,6513,3688,5360,5874,7759,null,null,null]],"1366":[[-5117,-1750,1789,3478,11633,-372,-772,3122,-739,1539,-1039,18944,-28,-2122,5,833,17450,5711,-1517,2217,5250,4983,-2633,8361,-1217,-872],[7646,1477,2117,6855,5518,4016,7529,3779,1624,717,1356,2556,7942,2238,225,5289,6531,5545,1056,7945,7268,5453,7187,null,null,null]],"1367":[[7711,-1372,-1033,-1361,-681,-206,900,-972,-4450,-1617,-1939,-1261,3756,-1572,8583,1878,9028,-1506,-439,2811,-783,-825,-3722,-1989,1528,10367],[7107,1081,2876,8531,2676,1686,7211,6978,4274,1043,3054,8619,8309,7466,4963,1469,7694,4344,1404,7246,2239,1581,8714,null,null,null]],"1368":[[-2344,3517,-1117,4783,-1028,1350,-2383,2678,-1517,-3300,-3056,-4083,2950,-1494,-986,-1856,-1572,-1861,-2011,-2144,-1922,-2811,6867,3189,900,-2722],[7371,6039,1548,7198,2132,5295,7202,4677,1074,7151,5098,4389,7559,2594,1322,3853,4009,1514,2343,2877,4699,6301,8456,null,null,null]],"1370":[[6156,-358,-1217,-3783,-1594,4011,-1117,7583,-1450,0,-2433,-4983,-2233,-1194,586,6556,344,18389,-2589,-4550,-2611,-83,-1900,717,6556,-1550],[6560,1349,1037,7950,2094,4674,7601,4976,1122,0,6072,7566,6064,3297,1865,4805,7831,4329,2761,5333,6807,2382,7207,null,null,null]],"1371":[[5683,-1106,2250,8583,12717,-1967,12872,1183,-236,2767,253,1328,-4150,2567,-158,-14,-1900,-1339,-1006,-1456,-1672,-392,14978,-803,-544,7000],[5516,936,6363,6778,4188,3909,8069,3764,659,2912,746,3255,6730,6600,3279,1943,6880,4082,2319,4207,3453,1935,6112,null,null,null]],"1372":[[3633,-1450,-561,-4317,1283,-1839,5444,-2633,-2967,-1589,-1539,3222,4117,-1150,-1989,-569,18167,-619,3450,3433,522,2456,4111,-2056,-1383,1744],[8141,3815,1415,7895,1615,2780,7916,2190,2656,2771,6609,6533,6245,1474,3833,433,4826,1336,2403,6491,5323,3461,7992,null,null,null]],"1373":[[13883,-808,-736,944,-925,-839,-1611,3011,-369,-650,-1106,683,-2922,669,7222,-3478,4717,-5050,1833,-3700,606,-1794,17,-1278,-539,-872],[5385,652,844,6451,1108,4907,7291,5699,2960,2514,2721,8643,7099,4772,3605,4006,7522,6136,4256,5180,4938,1694,7185,null,null,null]],"1375":[[-2656,-2811,3150,-5050,-1772,-2944,4717,-3722,-2944,-903,1967,-2856,-6244,-4483,-3656,-2167,-2900,10850,-197,2456,-939,2433,-4750,7806,-394,850],[5996,2516,6259,9317,1486,5546,7877,5289,5637,1177,3619,5340,6370,4985,3967,2257,6411,6186,1128,7279,4591,4806,8228,null,null,null]],"1376":[[2544,-753,-28,9900,1411,6956,-4550,4011,17,225,503,6639,10233,1250,-972,1367,6378,-678,-4317,-3589,-3144,-3811,1950,-1361,-744,-4850],[5055,827,2455,7701,7452,5957,6310,4080,1581,2095,3096,7943,7131,3230,2180,4187,6942,3747,4432,6834,3771,3657,8110,null,null,null]],"1377":[[-3383,436,-542,3717,2500,-1183,306,483,-1194,108,633,-4783,17350,-972,2011,-2011,3278,-1656,358,1567,656,-3278,0,-897,-1461,628],[6096,1284,2391,7289,4506,2007,6769,6416,1032,1481,5953,4278,5995,1539,4138,3732,7936,7045,4122,5057,5591,4909,7070,null,null,null]],"1378":[[-3883,-2056,-1744,-3189,-2211,-3367,4556,4683,128,1700,-1678,-5017,-4783,3150,-1228,-3944,-7267,278,9083,2522,-1361,161,9806,-4050,-3783,2583],[5660,2723,1834,8823,3279,4406,7662,4233,3754,4099,2358,9239,7670,6054,1545,4402,7708,4837,5489,6181,1504,5505,8147,null,null,null]],"1380":[[-1417,-6822,3322,-1961,-1506,-831,-2811,1389,-1728,-1928,8528,-806,18833,-2833,-3256,728,13911,4650,-42,-1633,3250,-2100,2056,-806,-1539,806],[5208,7605,4135,7888,3771,3341,7106,3565,2150,3525,5493,3866,2106,4553,3148,1844,6950,6255,558,5632,7226,1508,7747,null,null,null]],"1381":[[-3611,-742,2567,4550,2367,-2656,-3389,7756,694,-764,1094,-1139,-3317,-5117,-1850,-1039,10100,1283,8639,-1906,-1106,-33,878,2500,5750,-2544],[4182,786,4683,7998,2188,5409,8724,4368,2839,1070,1041,6397,6482,4207,1904,3796,6516,5473,6714,3493,1227,4511,6925,null,null,null]],"1382":[[-5083,-558,-1306,5750,-2767,-2278,-2244,4383,1078,-1361,-4417,-856,3183,-1639,-1078,-3389,-1967,161,1350,167,-661,2878,-2750,839,-3456,1344],[6291,1083,2354,7789,2503,5908,7829,5460,3396,1081,4674,5584,7545,2007,7208,3439,6892,6568,1860,6381,3567,4372,8537,null,null,null]],"1383":[[-4850,-1094,-719,-5222,4244,1183,-7978,317,-1006,-2167,-1494,-2300,9361,1456,-903,-908,-1389,-2122,-414,4156,-1150,8917,-1239,6333,-369,3478],[6482,2826,492,8962,6500,4799,8493,2665,2408,3162,2216,7802,7390,4510,2459,1595,6745,4732,1373,7411,5062,4808,7323,null,null,null]],"1385":[[2867,-3167,-186,8472,-639,-2767,-2389,4694,278,-1117,-1272,-2033,878,-2456,-3900,-419,1983,-1194,-58,-2989,-878,-2189,1900,3167,-286,-611],[6024,2557,1344,7698,4241,3037,5242,5557,4621,1076,3493,2120,8604,6094,3584,952,6798,3296,2388,7849,5578,1916,8923,null,null,null]],"1386":[[-33,-903,-1900,6511,6689,-2189,-3056,-1428,1011,8306,-1922,8972,650,922,506,-392,-1833,5622,-125,-2783,-2500,-2789,7700,2100,-2100,3100],[6788,2474,3001,7380,6650,2252,8062,3349,3626,2786,4078,7759,9171,3064,1943,530,9023,5106,3430,8650,6517,2418,7615,null,null,null]],"2218":[[1944,-628,-589,-4417,-2233,-761,-1300,4250,-1072,-2167,13961,-256,-2633,-1306,-1161,-2322,350,18389,-2033,5350,872,-3233,-1456,2300,1700,-2078],[3661,1247,4424,5522,2157,1699,3200,5350,871,1584,7412,8290,3244,844,1887,1814,4541,3751,2089,3229,3297,5800,6665,null,null,null]]}};
+/* 追加分 11/10〜11/18(貼り付けた表から) */
+const ADD = {"dates":["11/10","11/11","11/12","11/13","11/14","11/15","11/16","11/17","11/18"],"m":{"1311":[[-3122,461,-967,-4017,-1900,-1806,2989,-4217,2500],[3408,7085,4524,5086,3592,1487,1956,6282,5220]],"1312":[[6022,-2233,2544,-3100,14089,-1061,-286,-1122,-2989],[6920,1893,4553,3772,6424,1064,401,5420,3005]],"1313":[[3900,-3500,-997,-2478,-3650,5222,-297,-1472,3950],[7994,3305,767,6279,6482,5836,917,4132,4403]],"1315":[[-2233,6111,-1072,2433,-2856,-692,-408,1339,567],[7442,8350,1353,6875,7381,964,274,4195,5606]],"1316":[[-478,-2900,842,2389,967,2100,-1661,5089,967],[8460,2696,1723,6872,8175,3111,2137,6586,5066]],"1317":[[6361,11633,-972,17050,-544,14444,-700,-1794,-928],[7217,6532,957,3495,4554,5652,2430,3832,3296]],"1333":[[-3550,-4217,708,2583,-2989,-1906,-142,-1517,-1139],[5509,5099,3129,7101,7536,4530,4128,3649,2528]],"1335":[[-3033,5083,322,-5650,-483,-761,0,10900,931],[2819,6920,5291,5183,8596,4508,0,6521,2146]],"1336":[[5750,5844,-2233,-4183,-3900,1989,-286,861,7756],[7920,6784,2903,7292,4859,4348,546,5353,4123]],"1337":[[-4483,-1544,-2411,167,1411,-1450,-3522,1522,-1617],[6306,4149,3127,4331,6978,2317,3702,5160,2276]],"1338":[[6528,6633,-1161,-3100,7472,-753,-525,-2122,-992],[6752,6993,1820,5837,7750,1684,3236,5182,946]],"1350":[[-3122,2450,883,-628,-3389,-275,-1039,-3856,528],[4876,8083,3495,5284,5412,7542,1289,6002,3417]],"1351":[[-2367,-1817,-1700,-2833,-922,-1706,2233,-3389,-1461],[4794,2526,3611,5805,5134,3594,806,3966,1909]],"1352":[[3850,-3211,-2767,2517,-3611,-1183,2522,-2856,-2789],[7610,7776,2457,7894,6589,1211,5258,4062,3432]],"1353":[[4289,-2456,-1528,13572,-1883,-83,-908,-2500,-1811],[7215,5595,1262,5299,5414,3155,652,2962,1714]],"1355":[[-6156,917,-3389,989,-4983,983,389,1678,-525],[6716,7401,2473,7412,5353,5868,2388,4857,656]],"1356":[[-2633,5889,17250,-4550,4483,-3011,-850,2033,-839],[4427,5880,6118,5789,7215,6342,1212,4852,2871]],"1357":[[2500,6911,1228,-2944,-1078,-2078,-597,3750,-147],[8136,7928,1732,5305,8555,4435,1039,5489,1806]],"1358":[[-567,-1656,1833,16450,-1217,817,-375,-3900,-1917],[7247,4615,1973,3470,5189,3535,2023,3536,1628]],"1360":[[8639,1922,306,13289,-1611,-1317,-3233,-322,-3211],[7686,7577,2706,6896,5518,1249,2951,5469,6215]],"1361":[[-4517,1017,2478,-1722,-2967,4117,-225,-1494,-5217],[5954,7018,4602,4333,4278,5950,441,2919,5563]],"1362":[[-6778,8500,-1306,589,-428,-1833,-114,306,-1650],[8125,7132,1266,6390,7642,4201,2835,5621,2915]],"1363":[[-1078,-450,1389,-1361,-6556,4117,-164,2300,-1728],[6531,6778,5577,7921,5619,4383,127,6545,2652]],"1365":[[-456,2278,2589,-2967,650,-761,-1050,2656,-1967],[4999,5392,4207,6948,8888,2647,946,4797,2528]],"1366":[[-3033,-4217,789,-3917,-56,-1944,-542,-1206,350],[6275,4948,3482,7512,8620,4669,404,3759,5935]],"1367":[[-5050,-5583,861,-78,13822,-3122,-1283,5583,-1639],[5295,5670,1566,5427,7401,4638,1240,6038,1242]],"1368":[[-4650,-1906,1906,-1189,3544,-1611,7361,-2544,306],[6874,6467,2217,4952,8097,5767,6057,4431,1856]],"1370":[[1522,117,7194,3433,5083,-3811,-9,-3856,-2189],[7380,1437,4281,6401,6843,4434,334,4427,2094]],"1371":[[2989,12872,-1761,-2611,-2722,-1094,1661,-3450,142],[8658,6866,3171,5824,5970,2301,863,6108,495]],"1372":[[2144,-3167,836,9528,-628,-608,-1606,-2389,5050],[6472,4974,2009,5726,6206,2674,1025,3843,6282]],"1373":[[8033,2911,-2256,2233,-2700,-1106,-322,-3589,83],[7177,7410,3004,5296,6196,2651,2275,5761,1571]],"1375":[[-3211,7089,3250,2189,389,-1428,-2478,-2322,-1683],[6420,7608,3680,6508,9053,2272,1976,5168,3072]],"1376":[[-5617,7756,-2456,15867,4017,694,-461,617,-1128],[6339,5208,5913,6328,7443,4069,3030,4959,842]],"1377":[[-833,-2900,-1300,4150,-2167,10967,-239,3283,8367],[6146,3864,4072,6867,3930,5585,1741,4456,7682]],"1378":[[-322,2478,-33,-3717,-1528,9433,-1944,2989,-225],[5628,5545,3091,6547,3266,6026,2099,6194,1900]],"1380":[[-4450,-4183,-1583,-344,-3722,8639,0,10772,-1339],[5794,8853,2976,7124,6763,5658,0,5891,1130]],"1381":[[-2011,7750,-1428,189,3883,-3144,-1228,4183,186],[5683,8445,1045,6199,8263,2200,1104,6881,1438]],"1382":[[-3567,5017,-3633,-3100,-1472,-3567,8194,-1433,8472],[6571,4200,3163,5835,5376,3759,3543,6172,5572]],"1383":[[-2656,2150,411,2167,-8417,-3878,-1428,-4750,-2589],[5046,6245,3630,6456,8281,4316,2112,4477,2783]],"1385":[[-1989,-1389,56,-1744,-4950,5667,308,2350,-358],[5450,4289,6738,6438,5934,6098,1006,6800,683]],"1386":[[5889,-4050,917,-4517,2722,-1144,219,-2211,-2078],[5781,4082,1353,6831,7127,7684,183,6681,2816]],"2218":[[-1367,6644,-1672,-2167,9467,-1972,-581,-872,-1183],[3120,6166,2924,3969,6448,1919,3733,3026,4466]]}};
+ADD.dates.forEach(d => SRC.dates.push(d));
+Object.keys(SRC.m).forEach(k => { const a = ADD.m[k]; SRC.m[k][0].push(...(a ? a[0] : ADD.dates.map(() => 0))); SRC.m[k][1].push(...(a ? a[1] : ADD.dates.map(() => null))); });
+const DATES = SRC.dates, M = {};
+const LAST = DATES.length - 1, TICKS = [0, 6, 13, 19, LAST];
+Object.keys(SRC.m).forEach(k => M[+k] = { diff: SRC.m[k][0], games: SRC.m[k][1] });
+const HOT = new Set(DATES.filter((d, k) => dayStats(k).pay >= 105));
+const SUSPECT = { 1351: "10/21" };
+const WD = "日月火水木金土";
+const weekday = s => { const [m, d] = s.split("/").map(Number); return WD[new Date(2026, m - 1, d).getDay()]; };
+
+const ISLANDS = [
+  { id: "outer", name: "外周 左上", from: 1311, to: 1317, shape: { kind: "arc", r0: 335, r1: 425, a0: -80, a1: -12 } },
+  { id: "innerR", name: "内周 右", from: 1333, to: 1352, shape: { kind: "arc", r0: 240, r1: 330, a0: 136, a1: 12 } },
+  { id: "innerL", name: "内周 左", from: 1353, to: 1362, shape: { kind: "arc", r0: 240, r1: 330, a0: -12, a1: -136 } },
+  { id: "bottom", name: "下の島", from: 1363, to: 1373, shape: { kind: "bottom" } },
+  { id: "center", name: "中央の丸島", from: 1375, to: 1386, shape: { kind: "ring" } },
+  { id: "other", name: "位置未確認", from: 2218, to: 2218, shape: { kind: "single" } },
+];
+const isValidNo = n => !/[49]/.test(String(n));
+const nosBetween = (a, b) => { const o = []; for (let n = a; n <= b; n++) if (isValidNo(n)) o.push(n); return o; };
+
+const state = { day: DATES.length - 1, mode: "exp", sel: null, view: "map", sort: "pay", q: "" };
+
+/* 集計 */
+function statsOf(no) {
+  const m = M[no]; if (!m) return null;
+  let w = 0, g = 0, n = 0, wins = 0, hits = 0;
+  let pw = 0, gn = 0;
+  m.diff.forEach((d, i) => { w += d; n++; if (d > 0) wins++; if (d >= 5000) hits++; if (m.games[i] != null) { pw += d; g += m.games[i]; gn++; } });
+  return { pay: 100 + pw / (3 * g) * 100, avg: w / n, games: g / gn, win: wins / n * 100, hits };
+}
+function dayStats(k) {
+  let w = 0, g = 0, n = 0, hits = 0, wins = 0;
+  Object.values(M).forEach(m => { w += m.diff[k]; g += m.games[k] ?? 0; n++; if (m.diff[k] > 0) wins++; if (m.diff[k] >= 5000) hits++; });
+  const known = SRC.dayGames && SRC.dayGames[DATES[k]];
+  if (known) g = known * n;
+  return { pay: 100 + w / (3 * g) * 100, avg: w / n, games: g / n, win: wins / n * 100, hits, estimated: !!known };
+}
+const STATS = {}; Object.keys(M).forEach(k => STATS[k] = statsOf(+k));
+const fmt = v => (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(Math.round(v)).toLocaleString("ja-JP");
+const pct = v => v.toFixed(1) + "%";
+const thousands = v => (v > 0 ? "+" : v < 0 ? "−" : "±") + (Math.abs(v) / 1000).toFixed(1);
+
+const diffLevel = d => d >= 5000 ? "r" : d >= 1000 ? 4 : d > -1000 ? 3 : d > -3000 ? 2 : 1;
+const payLevel = p => p >= 110 ? "r" : p >= 104 ? 4 : p >= 98 ? 3 : p >= 92 ? 2 : 1;
+const levelColors = l => l === "r" ? ["var(--red)", "var(--red-ink)"] : [`var(--h${l})`, `var(--h${l}-ink)`];
+
+/* 図形 */
+const NS = "http://www.w3.org/2000/svg";
+const el = (t, a, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+const pt = (r, deg) => { const t = deg * Math.PI / 180; return [r * Math.sin(t), -r * Math.cos(t)]; };
+const fx = n => n.toFixed(1);
+function sector(r0, r1, a0, a1) {
+  const [lo, hi] = a0 < a1 ? [a0, a1] : [a1, a0], l = hi - lo > 180 ? 1 : 0;
+  const p = [pt(r1, lo), pt(r1, hi), pt(r0, hi), pt(r0, lo)];
+  return `M${fx(p[0][0])} ${fx(p[0][1])}A${r1} ${r1} 0 ${l} 1 ${fx(p[1][0])} ${fx(p[1][1])}L${fx(p[2][0])} ${fx(p[2][1])}A${r0} ${r0} 0 ${l} 0 ${fx(p[3][0])} ${fx(p[3][1])}Z`;
+}
+function layoutCells(island) {
+  const nos = nosBetween(island.from, island.to), s = island.shape;
+  if (s.kind === "arc") {
+    const st = (s.a1 - s.a0) / nos.length, rm = (s.r0 + s.r1) / 2;
+    return nos.map((no, i) => { const a = s.a0 + st * i, b = a + st, [x, y] = pt(rm, (a + b) / 2); return { no, d: sector(s.r0, s.r1, a, b), x, y }; });
+  }
+  if (s.kind === "single") return [{ no: nos[0], d: "M-440 410H-356V500H-440Z", x: -398, y: 455 }];
+  if (s.kind === "ring") return nos.map((no, i) => { const c = 180 - 36 * i, [x, y] = pt(124, c); return { no, d: sector(58, 180, c - 18, c + 18), x, y }; });
+  return nos.map((no, i) => {
+    if (i < 3) { const a = 210.6 - 10.2 * i, b = a - 10.2, [x, y] = pt(395, (a + b) / 2); return { no, d: sector(350, 440, b, a), x, y }; }
+    const x0 = (i - 3) * 70; return { no, d: `M${x0} 350H${x0 + 70}V440H${x0}Z`, x: x0 + 35, y: 395 };
+  });
+}
+
+const svg = document.getElementById("map");
+const cells = new Map(), islandOf = new Map();
+function drawMap() {
+  el("path", { class: "ghost", d: sector(335, 425, 12, 136) }, svg);
+  el("path", { class: "ghost", d: sector(335, 425, -136, -81) }, svg);
+  el("path", { class: "ghost", d: sector(445, 490, 180, 210.6) + "M0 445H420V490H0Z" }, svg);
+  [[pt(380, 74), "他機種"], [pt(380, -108), "他機種"], [[210, 467], "他機種"], [[-398, 392], "位置未確認"]].forEach(([p, s]) => { el("text", { class: "ghost-label", x: p[0], y: p[1] }, svg).textContent = s; });
+  el("circle", { class: "pillar", r: 52 }, svg);
+  ISLANDS.forEach(island => layoutCells(island).forEach(c => {
+    islandOf.set(c.no, island);
+    const g = el("g", { class: "cell", tabindex: "0", role: "button" }, svg);
+    const path = el("path", { d: c.d }, g);
+    const no = el("text", { class: "no", x: fx(c.x), y: fx(c.y), textLength: 56, lengthAdjust: "spacingAndGlyphs" }, g);
+    no.textContent = c.no;
+    const val = el("text", { class: "val", x: fx(c.x) }, g);
+    g.addEventListener("click", () => openSheet(c.no));
+    g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openSheet(c.no); } });
+    cells.set(c.no, { g, path, no, val, y: c.y });
+  }));
+}
+function renderMap() {
+  cells.forEach((c, no) => {
+    const m = M[no], s = STATS[no];
+    let fill = "var(--none)", ink = "var(--none-ink)", text = "";
+    if (m) {
+      if (state.mode === "day") {
+        if (m.games[state.day] !== 0) { [fill, ink] = levelColors(diffLevel(m.diff[state.day])); text = thousands(m.diff[state.day]); }
+        else text = "0G";
+      } else if (state.mode === "exp") { const e = EXP().get(no); if (e) { [fill, ink] = levelColors(expLevel(e.best)); text = e.best.toFixed(0) + "%"; } }
+      else { [fill, ink] = levelColors(payLevel(s.pay)); text = s.pay.toFixed(0) + "%"; }
+    }
+    c.path.style.fill = fill; c.no.style.fill = ink; c.val.style.fill = ink;
+    c.val.textContent = text;
+        c.no.setAttribute("y", fx(text ? c.y - 12 : c.y)); c.val.setAttribute("y", fx(c.y + 15));
+    c.g.classList.toggle("sel", state.sel === no);
+    c.g.setAttribute("aria-label", `${no}番台 ${text || "データなし"}`);
+  });
+}
+function renderDates() {
+  const box = document.getElementById("dates"); box.textContent = "";
+  DATES.forEach((d, k) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "date" + (HOT.has(d) ? " hot" : "");
+    b.setAttribute("aria-pressed", k === state.day);
+    b.append(d); const s = document.createElement("span"); s.textContent = weekday(d) + " " + dayStats(k).hits; b.append(s);
+    b.setAttribute("aria-label", `${d} ${weekday(d)}曜 +5000枚 ${dayStats(k).hits}台`);
+    b.addEventListener("click", () => { state.day = k; state.mode = "day"; renderAll(); });
+    box.appendChild(b);
+  });
+  const cur = box.children[state.day];
+  if (cur) box.scrollLeft = cur.offsetLeft - box.clientWidth / 2 + cur.offsetWidth / 2;
+}
+function renderDayStats() {
+  const box = document.getElementById("dayStats"); box.textContent = "";
+  const add = (l, v, r) => { const d = document.createElement("div"); d.className = "stat"; const a = document.createElement("span"); a.className = "label"; a.textContent = l; const b = document.createElement("b"); b.textContent = v; if (r) b.className = "red"; d.append(a, b); box.appendChild(d); };
+  if (state.mode === "exp") {
+    const e = [...EXP().values()], top = e.length ? Math.max(...e.map(p => p.best)) : 0, strong = e.filter(p => p.best >= 110).length;
+    add("対象日", nextDay()); add("110%以上", strong + "台", strong > 0); add("最高", top ? top.toFixed(1) + "%" : "—", top >= 110);
+    return;
+  }
+  if (state.mode === "day") {
+    const s = dayStats(state.day);
+    add("機械割", pct(s.pay), s.pay >= 105); add("+5,000台", s.hits + "台", s.hits >= 8); add("平均回転", Math.round(s.games).toLocaleString("ja-JP") + "G");
+  } else {
+    const list = Object.values(STATS), hits = list.reduce((a, s) => a + s.hits, 0);
+    let tw = 0, tg = 0; DATES.forEach((d, k) => { const s = dayStats(k); tw += s.avg * Object.keys(M).length; tg += s.games * Object.keys(M).length; });
+    add(DATES.length + "日機械割", pct(100 + tw / (3 * tg) * 100)); add("+5,000回", hits + "回"); add("反映台数", list.length + "台");
+  }
+}
+function renderLegend() {
+  const items = state.mode === "exp"
+    ? [["r", "110%〜"], [4, "106〜110"], [3, "103〜106"], [2, "100〜103"], [1, "〜100%"], ["none", "根拠なし"]]
+    : state.mode === "day"
+    ? [["r", "+5,000〜"], [4, "+1,000〜"], [3, "±999"], [2, "−1,000〜"], [1, "−3,000〜"]]
+    : [["r", "110%〜"], [4, "104〜110"], [3, "98〜104"], [2, "92〜98"], [1, "〜92%"]];
+  const ul = document.getElementById("legend"); ul.textContent = "";
+  items.forEach(([l, t]) => {
+    const li = document.createElement("li"), i = document.createElement("i");
+    i.style.background = l === "none" ? "var(--none)" : levelColors(l)[0]; li.append(i, t); ul.appendChild(li);
+  });
+}
+
+/* 台の詳細 */
+function sparkSvg(no) {
+  const m = M[no], W = 360, H = 104, zero = 74, sc = v => v >= 0 ? Math.min(v, 19000) / 19000 * 66 : Math.max(v, -8000) / 8000 * 28;
+  const s = document.createElementNS(NS, "svg");
+  s.setAttribute("viewBox", `0 0 ${W} ${H}`); s.setAttribute("class", "spark"); s.setAttribute("role", "img");
+  s.setAttribute("aria-label", `${no}番台の日別差枚`);
+  el("line", { x1: 0, x2: W, y1: zero, y2: zero, stroke: "var(--line)" }, s);
+  const y5 = zero - sc(5000); el("line", { x1: 0, x2: W, y1: y5, y2: y5, stroke: "var(--red)", "stroke-dasharray": "1 4", "stroke-linecap": "round" }, s);
+  const lt = el("text", { x: W, y: y5 - 3, "text-anchor": "end", "font-size": 9, fill: "var(--muted)", "font-family": "var(--mono)" }, s); lt.textContent = "+5,000";
+  const step = W / DATES.length;
+  m.diff.forEach((d, i) => {
+    const h = Math.max(Math.abs(sc(d)), 1.5), x = i * step + step / 2 - 4.5, y = d >= 0 ? zero - h : zero;
+    el("rect", { x: fx(x), y: fx(y), width: 9, height: fx(h), rx: 2, fill: d >= 5000 ? "var(--red)" : i === state.day ? "var(--fg)" : "var(--h3)" }, s);
+  });
+  TICKS.forEach(i => { const t = el("text", { x: fx(i === LAST ? W : i === 0 ? 0 : i * step + step / 2), y: H - 2, "text-anchor": i === LAST ? "end" : i === 0 ? "start" : "middle", "font-size": 9, fill: "var(--muted)", "font-family": "var(--mono)" }, s); t.textContent = DATES[i]; });
+  return s;
+}
+function renderSheet() {
+  const sh = document.getElementById("sheet"), page = document.getElementById("page"), no = state.sel;
+  sh.textContent = "";
+  sh.hidden = !no; page.classList.toggle("has-sheet", !!no);
+  if (!no) return;
+  const head = document.createElement("div"); head.className = "sheet-head";
+  const n = document.createElement("span"); n.className = "sheet-no"; n.textContent = no;
+  const w = document.createElement("span"); w.className = "sheet-where"; w.textContent = islandOf.get(no).name;
+  head.append(n, w);
+  if (SUSPECT[no]) { const t = document.createElement("span"); t.className = "tag out"; t.textContent = SUSPECT[no] + " 要確認"; head.appendChild(t); }
+  const ex = EXP().get(no); if (ex) { const t2 = document.createElement("span"); t2.className = "tag"; t2.textContent = `期待 ${ex.best.toFixed(1)}% ${ex.hits[0].label}・${ex.hits[0].n}日`; head.appendChild(t2); }
+  const close = document.createElement("button"); close.id = "sheetClose"; close.type = "button"; close.textContent = "×"; close.setAttribute("aria-label", "閉じる");
+  close.addEventListener("click", () => { state.sel = null; renderAll(); });
+  sh.append(head, close);
+  const m = M[no];
+  if (!m) { const p = document.createElement("p"); p.className = "note"; p.textContent = "この台のデータはまだありません。差枚表の下側のスクショを送ってもらえれば反映できます。"; sh.appendChild(p); return; }
+  const s = STATS[no], st = document.createElement("div"); st.className = "stats";
+  const dayVal = m.games[state.day] !== 0 ? fmt(m.diff[state.day]) : "0G";
+  [[DATES[state.day] + " 差枚", dayVal, m.diff[state.day] >= 5000], ["回転数", m.games[state.day] == null ? "—" : m.games[state.day].toLocaleString("ja-JP") + "G"], ["機械割", pct(s.pay), s.pay >= 110], ["平均差枚", fmt(s.avg)], ["勝率", s.win.toFixed(0) + "%"], ["+5,000", s.hits + "回", s.hits >= 4]].forEach(([l, v, r]) => {
+    const d = document.createElement("div"); d.className = "stat"; const a = document.createElement("span"); a.className = "label"; a.textContent = l; const b = document.createElement("b"); b.textContent = v; if (r) b.className = "red"; d.append(a, b); st.appendChild(d);
+  });
+  sh.append(sparkSvg(no), st);
+}
+function openSheet(no) { state.sel = state.sel === no ? null : no; renderMap(); renderSheet(); renderMachines(); }
+
+/* 狙い目(slot-eye 狙い方別平均 過去90日) */
+const BASE = 102.8;
+const STRAT = [
+  ["minus", "連続差枚マイナス", [102.2, 103.1, 103.7, 102.0, 104.4]],
+  ["plus", "連続差枚プラス", [101.9, 102.9, 99.9, 97.3, 123.7]],
+  ["dw1", "差枚ワースト1", [98.5, 99.6, 99.2, 99.5, 104.5, 105.0, 103.2, 108.2, 107.2]],
+  ["dw2", "差枚ワースト2", [98.0, 100.5, 109.6, 108.1, 110.1, 104.0, 108.7, 99.0, 106.5]],
+  ["gw1", "回転数ワースト1", [103.4, 109.8, 106.4, 118.2, 119.6, 116.2, 113.3, 115.3, 115.2]],
+  ["gw2", "回転数ワースト2", [106.8, 105.9, 110.4, 110.2, 103.2, 105.8, 110.8, 105.0, 108.2]],
+  ["db1", "差枚ベスト1", [101.7, 102.3, 104.6, 100.9, 105.2, 101.1, 100.5, 103.9, 97.8]],
+  ["db2", "差枚ベスト2", [101.8, 101.5, 104.5, 107.4, 104.8, 104.1, 106.4, 101.5, 102.4]],
+  ["gb1", "回転数ベスト1", [102.4, 103.3, 102.0, 102.2, 100.9, 98.1, 95.8, 103.0, 104.3]],
+  ["gb2", "回転数ベスト2", [105.6, 101.1, 96.1, 99.9, 104.2, 107.8, 106.3, 102.9, 102.3]],
+  ["dent", "差枚−10,000〜−5,001", [106.5, 99.8, 103.6, 104.6, 103.6, 103.3, 102.1, 102.6, 103.4]],
+];
+function picks(only, min = BASE) {
+  const last = DATES.length - 1, nos = Object.keys(M).map(Number), res = new Map();
+  const add = (no, label, n, v) => { if (!res.has(no)) res.set(no, []); res.get(no).push({ label, n, v }); };
+  const sumOf = (no, key, n) => { let s = 0; for (let i = last - n + 1; i <= last; i++) { const x = M[no][key][i]; if (x == null) return null; s += x; } return s; };
+  STRAT.filter(s => !only || only.includes(s[0])).forEach(([id, label, vals]) => vals.forEach((v, j) => {
+    const n = j + 1;
+    if (id === "minus" || id === "plus") {
+      nos.forEach(no => { let k = 0; while (k < 5 && (id === "minus" ? M[no].diff[last - k] < 0 : M[no].diff[last - k] > 0)) k++; if (k === n) add(no, label, n, v); });
+    } else if (id === "dent") {
+      nos.forEach(no => { const s = sumOf(no, "diff", n); if (s != null && s >= -10000 && s <= -5001) add(no, label, n, v); });
+    } else {
+      const key = id[0] === "d" ? "diff" : "games", worst = id[1] === "w", list = nos.map(no => [no, sumOf(no, key, n)]).filter(x => x[1] != null).sort((a, b) => worst ? a[1] - b[1] : b[1] - a[1]);
+      const hit = list[+id[2] - 1]; if (hit) add(hit[0], label, n, v);
+    }
+  }));
+  return [...res].map(([no, hits]) => { hits.sort((a, b) => b.v - a.v); return { no, hits, best: hits[0].v }; })
+    .filter(p => p.best > min).sort((a, b) => b.best - a.best || b.hits.length - a.hits.length);
+}
+const EXP_IDS = ["gw1", "gw2", "dw1", "dw2"];
+let EXP_CACHE = null;
+const EXP = () => EXP_CACHE || (EXP_CACHE = new Map(picks(EXP_IDS, 0).map(p => [p.no, p])));
+const expLevel = p => p >= 110 ? "r" : p >= 106 ? 4 : p >= 103 ? 3 : p >= 100 ? 2 : 1;
+function nextDay() { const [m, d] = DATES[DATES.length - 1].split("/").map(Number), t = new Date(2026, m - 1, d + 1); return (t.getMonth() + 1) + "/" + String(t.getDate()).padStart(2, "0"); }
+const PICK_MIN = 105, PICK_STRONG = 108;
+function renderPicks() {
+  const box = document.getElementById("picks"); box.textContent = "";
+  const [m, d] = DATES[DATES.length - 1].split("/").map(Number), t = new Date(2026, m - 1, d + 1);
+  const day = (t.getMonth() + 1) + "/" + String(t.getDate()).padStart(2, "0");
+  const lab = document.createElement("span"); lab.className = "label"; lab.textContent = `PICKS ${day} / 期待機械割の高い順 赤 = ${PICK_STRONG}%以上`;
+  const rows = document.createElement("div"); rows.className = "rows";
+  picks().filter(p => p.best >= PICK_MIN).forEach((p, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "row";
+    const pos = document.createElement("span"); pos.className = "pos"; pos.textContent = i + 1;
+    const num = document.createElement("span"); num.className = "num"; num.textContent = p.no;
+    const h = p.hits[0], why = document.createElement("span"); why.className = "why";
+    why.textContent = `${h.label}・過去${h.n}日` + (p.hits.length > 1 ? ` ほか${p.hits.length - 1}件` : "");
+    why.title = p.hits.map(x => `${x.label}・過去${x.n}日 ${x.v.toFixed(1)}%`).join("\n");
+    const v = document.createElement("span"); v.className = "val"; v.textContent = p.best.toFixed(1); if (p.best >= PICK_STRONG) v.classList.add("red");
+    b.append(pos, num, why, v);
+    b.setAttribute("aria-label", `${i + 1}位 ${p.no}番台 期待機械割${p.best.toFixed(1)}% ${why.textContent}`);
+    b.addEventListener("click", () => openSheet(p.no));
+    rows.appendChild(b);
+  });
+  const note = document.createElement("p"); note.className = "note";
+  note.textContent = `slot-eyeの狙い方別平均(過去90日、11/18時点)を、このツールの差枚・回転数に当てはめています。台ごとに当てはまる条件のうち一番高い機械割を期待値とし、${PICK_MIN}%以上の台だけを表示しています(機種平均は${BASE}%)。ボナ回数系の条件はBB/RBのデータがないため使っていません。`;
+  box.append(lab, rows, note);
+}
+/* 台リスト */
+const SORTS = [["pay", "機械割"], ["avg", "平均差枚"], ["hits", "+5,000回数"], ["win", "勝率"], ["no", "台番"]];
+function stripSvg(no) {
+  const s = document.createElementNS(NS, "svg"); s.setAttribute("viewBox", "0 0 " + DATES.length * 10 + " 14"); s.setAttribute("class", "strip"); s.setAttribute("preserveAspectRatio", "none"); s.setAttribute("aria-hidden", "true");
+  M[no].diff.forEach((d, i) => el("rect", { x: i * 10, y: d >= 5000 ? 1 : d > 0 ? 4 : 6, width: 8, height: d >= 5000 ? 12 : d > 0 ? 6 : 2, rx: 1, fill: d >= 5000 ? "var(--red)" : d > 0 ? "var(--fg)" : "var(--h3)" }, s));
+  return s;
+}
+function renderSorts() {
+  const box = document.getElementById("sorts"); box.textContent = "";
+  SORTS.forEach(([k, l]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = l; b.setAttribute("aria-pressed", state.sort === k); b.addEventListener("click", () => { state.sort = k; renderSorts(); renderMachines(); }); box.appendChild(b); });
+}
+function renderMachines() {
+  const box = document.getElementById("machineList"); box.textContent = "";
+  const q = state.q;
+  const nos = [...cells.keys()].filter(n => !q || String(n).includes(q));
+  const have = nos.filter(n => M[n]).sort((a, b) => state.sort === "no" ? a - b : STATS[b][state.sort] - STATS[a][state.sort]);
+  const none = nos.filter(n => !M[n]);
+  have.concat(none).forEach((no, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "row";
+    const pos = document.createElement("span"); pos.className = "pos"; pos.textContent = M[no] ? i + 1 : "–";
+    const num = document.createElement("span"); num.className = "num"; num.textContent = no + (SUSPECT[no] ? "＊" : "");
+    const v = document.createElement("span"); v.className = "val";
+    if (M[no]) {
+      const s = STATS[no];
+      const t = state.sort === "avg" ? fmt(s.avg) : state.sort === "hits" ? s.hits + "回" : state.sort === "win" ? s.win.toFixed(0) + "%" : s.pay.toFixed(1);
+      v.textContent = t; if (s.pay >= 110 && (state.sort === "pay" || state.sort === "no")) v.classList.add("red");
+      b.append(pos, num, stripSvg(no), v);
+    } else { const e = document.createElement("span"); e.className = "note"; e.textContent = "データなし"; v.textContent = "—"; b.append(pos, num, e, v); }
+    b.addEventListener("click", () => openSheet(no));
+    box.appendChild(b);
+  });
+  if (!nos.length) { const p = document.createElement("p"); p.className = "note"; p.style.padding = "12px"; p.style.margin = "0"; p.style.background = "var(--surface)"; p.textContent = q.length === 4 && !isValidNo(+q) ? `${q}は4か9を含むため欠番です。` : `${q}に該当する台はありません。`; box.appendChild(p); }
+}
+
+/* 日付 */
+function renderDays() {
+  const c = document.getElementById("dayChart"); c.textContent = "";
+  const W = 360, x0 = 26, top = 8, bot = 128, lo = 85, hi = 115, y = v => bot - (v - lo) / (hi - lo) * (bot - top), step = (W - x0) / DATES.length;
+  [90, 100, 110].forEach(v => {
+    el("line", { x1: x0, x2: W, y1: y(v), y2: y(v), stroke: "var(--line)", "stroke-dasharray": v === 100 ? "" : "1 4" }, c);
+    el("text", { x: 0, y: y(v) + 3 }, c).textContent = v;
+  });
+  DATES.forEach((d, k) => {
+    const p = dayStats(k).pay, y1 = y(Math.min(Math.max(p, lo), hi)), y0 = y(100);
+    el("rect", { x: fx(x0 + k * step + 2), y: fx(Math.min(y0, y1)), width: fx(step - 4), height: fx(Math.max(Math.abs(y1 - y0), 1)), rx: 1.5, fill: HOT.has(d) ? "var(--red)" : "var(--h3)" }, c);
+  });
+  TICKS.forEach(k => { el("text", { x: fx(k === LAST ? W : x0 + k * step + step / 2), y: 146, "text-anchor": k === LAST ? "end" : "middle" }, c).textContent = DATES[k]; });
+
+  const mx = document.getElementById("matrix"); mx.textContent = "";
+  const nos = Object.keys(M).map(Number).sort((a, b) => a - b), cw = 14, ch = 13, left = 30, head = 14;
+  mx.setAttribute("viewBox", `0 0 ${left + cw * DATES.length} ${head + ch * nos.length}`);
+  DATES.forEach((d, k) => { if (TICKS.includes(k)) el("text", { x: k === LAST ? left + cw * DATES.length : left + k * cw + cw / 2, y: 9, "text-anchor": k === LAST ? "end" : "middle" }, mx).textContent = d; if (HOT.has(d)) el("rect", { x: left + k * cw, y: head - 2, width: cw, height: ch * nos.length + 2, fill: "var(--red)", opacity: .1 }, mx); });
+  nos.forEach((no, r) => {
+    const cy = head + r * ch + ch / 2;
+    el("text", { x: 0, y: cy + 3 }, mx).textContent = no;
+    M[no].diff.forEach((d, k) => {
+      const big = d >= 5000, r0 = big ? 5 : d >= 1000 ? 3.2 : d > 0 ? 2 : 1.1;
+      el("circle", { cx: left + k * cw + cw / 2, cy, r: r0, fill: big ? "var(--red)" : d > 0 ? "var(--fg)" : "var(--h3)" }, mx);
+    });
+    const hit = el("rect", { class: "rowhit", x: 0, y: head + r * ch, width: left + cw * DATES.length, height: ch }, mx);
+    hit.addEventListener("click", () => openSheet(no));
+  });
+
+  const box = document.getElementById("dayList"); box.textContent = "";
+  DATES.map((d, k) => k).reverse().forEach(k => {
+    const d = DATES[k], s = dayStats(k), b = document.createElement("button"); b.type = "button"; b.className = "row";
+    const a = document.createElement("span"); a.className = "num"; a.textContent = d + " " + weekday(d);
+    const g = document.createElement("span"); g.className = "hint2"; g.textContent = Math.round(s.games).toLocaleString("ja-JP") + "G";
+    const h = document.createElement("span"); h.className = "hint2"; h.textContent = "+5k " + s.hits;
+    const v = document.createElement("span"); v.className = "val"; v.textContent = s.pay.toFixed(1); if (HOT.has(d)) v.classList.add("red");
+    b.append(a, g, h, v);
+    b.addEventListener("click", () => { state.day = k; state.mode = "day"; setView("map"); });
+    box.appendChild(b);
+  });
+}
+
+/* 画面切替 */
+document.getElementById("range").textContent = DATES[0] + "–" + DATES[LAST];
+document.querySelectorAll(".nd").forEach(e => e.textContent = DATES.length);
+const VIEWS = ["map", "machines", "days"];
+function setView(v, push = true) {
+  state.view = v;
+  VIEWS.forEach(x => document.getElementById("v-" + x).hidden = x !== v);
+  document.querySelectorAll("nav.tabs button").forEach(b => { if (b.dataset.v === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+  if (push) { try { location.hash = v; } catch (e) {} window.scrollTo(0, 0); }
+  renderAll();
+}
+function renderAll() {
+  document.getElementById("mExp").setAttribute("aria-pressed", state.mode === "exp");
+  document.getElementById("mDay").setAttribute("aria-pressed", state.mode === "day");
+  document.getElementById("mAll").setAttribute("aria-pressed", state.mode === "all");
+  renderDayStats(); renderLegend(); renderMap(); renderSheet(); renderMachines();
+  if (state.view === "map") renderDates();
+}
+
+drawMap(); renderSorts(); renderDays(); renderPicks();
+document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => setView(b.dataset.v)));
+document.getElementById("mExp").addEventListener("click", () => { state.mode = "exp"; renderAll(); });
+document.getElementById("mDay").addEventListener("click", () => { state.mode = "day"; renderAll(); });
+document.getElementById("mAll").addEventListener("click", () => { state.mode = "all"; renderAll(); });
+document.getElementById("q").addEventListener("input", e => { state.q = e.target.value.replace(/\D/g, ""); renderMachines(); });
+window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (VIEWS.includes(h) && h !== state.view) setView(h, false); });
+const h0 = location.hash.slice(1); setView(VIEWS.includes(h0) ? h0 : "map", false);
+</script>
+
+</body></html>
