@@ -197,7 +197,7 @@ nav.tabs button[aria-current="page"] .ind { background: var(--secondary-containe
     </div>
     <div class="map-card"><svg id="map" viewBox="-445 -445 890 960" role="img" aria-label="台の配置図。案内図と同じ向き"></svg></div>
     <ul class="legend" id="legend"></ul>
-    <p class="note">日付の右端の「明日 予測」を選ぶと、明日の各台の+3,000枚を超える確率をヒートマップで表示します(⚠は前日+3,000枚超えの台で、AI Recommendの対象外)。緑の枠はAI Recommend、オレンジの枠はギャン中 Recommendの5台です(両方に入る台は緑の内側にオレンジの二重枠)(日付を選ぶとその日の推奨、選んでいないときは明日の推奨)。期待度は回転数ワースト1・2と差枚ワースト1・2(過去1〜9日)だけを根拠に、slot-eyeの期待値表(1年+直近90日)から計算しています。灰色はどの条件にも当てはまらない台です。セル内の差枚は千枚単位です(+18.7 = 約+18,700枚)。正確な値は台をタップすると出ます。2218は見世物小屋の台で、左下に別枠で表示しています。</p>
+    <p class="note">日付の右端の「明日 予測」を選ぶと、明日の推奨台をマップ上で色分けし(緑がAI、オレンジがギャン中、両方の台は斜めに半分ずつ)、その下にそれぞれの5台を表示します。⚠は前日+3,000枚超えの台です。緑の枠はAI Recommend、オレンジの枠はギャン中 Recommendの5台です(両方に入る台は緑の内側にオレンジの二重枠)(日付を選ぶとその日の推奨、選んでいないときは明日の推奨)。期待度は回転数ワースト1・2と差枚ワースト1・2(過去1〜9日)だけを根拠に、slot-eyeの期待値表(1年+直近90日)から計算しています。灰色はどの条件にも当てはまらない台です。セル内の差枚は千枚単位です(+18.7 = 約+18,700枚)。正確な値は台をタップすると出ます。2218は見世物小屋の台で、左下に別枠で表示しています。</p>
   </section>
 
   <section class="view" id="v-machines" hidden>
@@ -311,6 +311,8 @@ const svg = document.getElementById("map");
 const cells = new Map(), islandOf = new Map();
 function drawMap() {
   const defs = el("defs", {}, svg);
+  const lg = el("linearGradient", { id: "splitFill", x1: 0, y1: 0, x2: 1, y2: 1 }, defs);
+  el("stop", { offset: "50%", style: "stop-color: var(--ai-ring)" }, lg); el("stop", { offset: "50%", style: "stop-color: var(--gamble)" }, lg);
   el("path", { class: "ghost", d: sector(335, 425, 12, 136) }, svg);
   el("path", { class: "ghost", d: sector(335, 425, -136, -81) }, svg);
   el("path", { class: "ghost", d: sector(445, 490, 180, 210.6) + "M0 445H420V490H0Z" }, svg);
@@ -342,9 +344,10 @@ function renderMap() {
         if (m.games[state.day] !== 0) { [fill, ink] = levelColors(diffLevel(m.diff[state.day])); text = thousands(m.diff[state.day]); }
         else text = "0G";
       } else if (state.mode === "next") {
-        const pr = (PRED.probs || {})[no];
-        if (AI_EXCL.has(no)) text = "対象外";
-        else if (pr) { [fill, ink] = levelColors(nextLevel(pr.p)); text = (pr.prev > AI_HIT ? "⚠" : "") + (pr.p * 100).toFixed(0) + "%"; }
+        const pr = (PRED.probs || {})[no], inA = AI_SET.has(no), inG = GB_SET.has(no);
+        if (inA || inG) { fill = inA && inG ? "url(#splitFill)" : inA ? "var(--ai-ring)" : "var(--gamble)"; ink = "#ffffff"; text = (pr && pr.prev > AI_HIT ? "⚠ " : "") + (inA && inG ? "AI·G" : inA ? "AI" : "G"); }
+        else if (AI_EXCL.has(no)) text = "対象外";
+        else if (pr && pr.prev > AI_HIT) text = "⚠";
       } else if (state.mode === "exp") { const e = EXP().get(no); if (e) { [fill, ink] = levelColors(expLevel(e.best)); text = e.best.toFixed(0) + "%"; } }
       else { [fill, ink] = levelColors(payLevel(s.pay)); text = s.pay.toFixed(0) + "%"; }
     }
@@ -352,8 +355,8 @@ function renderMap() {
     c.val.textContent = text;
         c.no.setAttribute("y", fx(text ? c.y - 12 : c.y)); c.val.setAttribute("y", fx(c.y + 15));
     c.g.classList.toggle("sel", state.sel === no);
-    c.g.classList.toggle("ai", AI_SET.has(no));
-    c.g.classList.toggle("gb", GB_SET.has(no));
+    c.g.classList.toggle("ai", state.mode !== "next" && AI_SET.has(no));
+    c.g.classList.toggle("gb", state.mode !== "next" && GB_SET.has(no));
     c.g.setAttribute("aria-label", `${no}番台 ${text || "データなし"}`);
   });
 }
@@ -401,9 +404,13 @@ function renderDayStats() {
   }
 }
 function renderLegend() {
-  const items = state.mode === "next"
-    ? [["r", "30%〜"], [4, "24〜30"], [3, "18〜24"], [2, "12〜18"], [1, "〜12%"], ["none", "対象外"]]
-    : state.mode === "exp"
+  if (state.mode === "next") {
+    const ul = document.getElementById("legend"); ul.textContent = "";
+    [["var(--ai-ring)", "AI Recommend"], ["var(--gamble)", "ギャン中 Recommend"], ["linear-gradient(135deg, var(--ai-ring) 50%, var(--gamble) 50%)", "両方"], ["var(--none)", "その他"]].forEach(([c, t]) => { const li = document.createElement("li"), i = document.createElement("i"); i.style.background = c; li.append(i, t); ul.appendChild(li); });
+    const li = document.createElement("li"); li.textContent = "⚠ 前日+3,000枚超え"; ul.appendChild(li);
+    return;
+  }
+  const items = state.mode === "exp"
     ? [["r", "108%〜"], [4, "105〜108"], [3, "103〜105"], [2, "101〜103"], [1, "〜101%"], ["none", "根拠なし"]]
     : state.mode === "day"
     ? [["r", "+5,000〜"], [4, "+1,000〜"], [3, "±999"], [2, "−1,000〜"], [1, "−3,000〜"]]
@@ -735,6 +742,9 @@ function renderAll() {
   document.getElementById("mDay").setAttribute("aria-pressed", state.mode === "day");
   document.getElementById("mAll").setAttribute("aria-pressed", state.mode === "all");
   renderDayStats(); renderLegend(); renderMap(); renderSheet(); renderMachines(); renderReco();
+  { const sec = document.getElementById("v-map"), ra = document.getElementById("recoMap"), rg = document.getElementById("gambleMap"), lgd = document.getElementById("legend");
+    if (state.mode === "next") { sec.insertBefore(ra, lgd.nextSibling); sec.insertBefore(rg, ra.nextSibling); }
+    else { sec.insertBefore(rg, sec.firstChild); sec.insertBefore(ra, rg); } }
   if (state.view === "map") renderDates();
 }
 
