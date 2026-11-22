@@ -32,6 +32,11 @@ def build(df):
         feats[f"bprob_s{n}"] = (b / g.replace(0, np.nan))          # ボーナス確率(回数/回転)
         feats[f"rbshare_s{n}"] = roll(R, n) / b.replace(0, np.nan)  # ボーナスのうちRBの割合
     feats["bprob_m30"] = (B.shift(1).rolling(30, min_periods=5).sum() / G.shift(1).rolling(30, min_periods=5).sum())
+    big = (D > 10000).astype(float).where(present)
+    feats["n10k_r30"] = big.shift(1).rolling(30, min_periods=5).sum()
+    feats["n10k_r90"] = big.shift(1).rolling(90, min_periods=10).sum()
+    feats["max_d30"] = D.shift(1).rolling(30, min_periods=5).max()
+    feats["n3k_r30"] = (D > 3000).astype(float).where(present).shift(1).rolling(30, min_periods=5).mean()
     feats["games_m30"] = G.shift(1).rolling(30, min_periods=5).mean()
     feats["diff_m30"] = D.shift(1).rolling(30, min_periods=5).mean()
     feats["hit5k_r30"] = (D > TARGET).astype(float).where(present).shift(1).rolling(30, min_periods=5).mean()
