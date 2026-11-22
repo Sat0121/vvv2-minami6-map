@@ -137,7 +137,7 @@ nav.tabs button[aria-current="page"] { background: var(--pill-on); color: var(--
     </div>
     <div class="map-card"><svg id="map" viewBox="-445 -445 890 960" role="img" aria-label="台の配置図。案内図と同じ向き"></svg></div>
     <ul class="legend" id="legend"></ul>
-    <p class="note">期待度は回転数ワースト1・2と差枚ワースト1・2(過去1〜9日)だけで計算し、当てはまる条件のうち一番高い機械割を表示しています。灰色はどの条件にも当てはまらない台です。セル内の差枚は千枚単位です(+18.7 = 約+18,700枚)。正確な値は台をタップすると出ます。</p>
+    <p class="note">期待度は回転数ワースト1・2と差枚ワースト1・2(過去1〜9日)だけを根拠に、slot-eyeの期待値表(1年+直近90日)から計算しています。灰色はどの条件にも当てはまらない台です。セル内の差枚は千枚単位です(+18.7 = 約+18,700枚)。正確な値は台をタップすると出ます。</p>
   </section>
 
   <section class="view" id="v-machines" hidden>
@@ -296,8 +296,8 @@ function renderDayStats() {
   const box = document.getElementById("dayStats"); box.textContent = "";
   const add = (l, v, r) => { const d = document.createElement("div"); d.className = "stat"; const a = document.createElement("span"); a.className = "label"; a.textContent = l; const b = document.createElement("b"); b.textContent = v; if (r) b.className = "red"; d.append(a, b); box.appendChild(d); };
   if (state.mode === "exp") {
-    const e = [...EXP().values()], top = e.length ? Math.max(...e.map(p => p.best)) : 0, strong = e.filter(p => p.best >= 110).length;
-    add("対象日", nextDay()); add("110%以上", strong + "台", strong > 0); add("最高", top ? top.toFixed(1) + "%" : "—", top >= 110);
+    const e = [...EXP().values()], top = e.length ? Math.max(...e.map(p => p.best)) : 0, strong = e.filter(p => p.best >= 108).length;
+    add("対象日", nextDay()); add("108%以上", strong + "台", strong > 0); add("最高", top ? top.toFixed(1) + "%" : "—", top >= 108);
     return;
   }
   if (state.mode === "day") {
@@ -311,7 +311,7 @@ function renderDayStats() {
 }
 function renderLegend() {
   const items = state.mode === "exp"
-    ? [["r", "110%〜"], [4, "106〜110"], [3, "103〜106"], [2, "100〜103"], [1, "〜100%"], ["none", "根拠なし"]]
+    ? [["r", "108%〜"], [4, "105〜108"], [3, "103〜105"], [2, "101〜103"], [1, "〜101%"], ["none", "根拠なし"]]
     : state.mode === "day"
     ? [["r", "+5,000〜"], [4, "+1,000〜"], [3, "±999"], [2, "−1,000〜"], [1, "−3,000〜"]]
     : [["r", "110%〜"], [4, "104〜110"], [3, "98〜104"], [2, "92〜98"], [1, "〜92%"]];
@@ -364,62 +364,62 @@ function renderSheet() {
 }
 function openSheet(no) { state.sel = state.sel === no ? null : no; renderMap(); renderSheet(); renderMachines(); }
 
-/* 狙い目(slot-eye 狙い方別平均 過去90日) */
-const BASE = 102.8;
-const STRAT = [
-  ["minus", "連続差枚マイナス", [102.2, 103.1, 103.7, 102.0, 104.4]],
-  ["plus", "連続差枚プラス", [101.9, 102.9, 99.9, 97.3, 123.7]],
-  ["dw1", "差枚ワースト1", [98.5, 99.6, 99.2, 99.5, 104.5, 105.0, 103.2, 108.2, 107.2]],
-  ["dw2", "差枚ワースト2", [98.0, 100.5, 109.6, 108.1, 110.1, 104.0, 108.7, 99.0, 106.5]],
-  ["gw1", "回転数ワースト1", [103.4, 109.8, 106.4, 118.2, 119.6, 116.2, 113.3, 115.3, 115.2]],
-  ["gw2", "回転数ワースト2", [106.8, 105.9, 110.4, 110.2, 103.2, 105.8, 110.8, 105.0, 108.2]],
-  ["bw1", "ボナ回数ワースト1", [99.0, 107.2, 110.4, 110.6, 107.3, 106.3, 103.4, 105.2, 108.5]],
-  ["bw2", "ボナ回数ワースト2", [105.5, 105.6, 109.2, 108.8, 112.6, 103.4, 107.6, 98.7, 103.8]],
-  ["bb1", "ボナ回数ベスト1", [103.2, 103.7, 95.7, 99.8, 98.3, 97.8, 102.5, 100.9, 98.2]],
-  ["bb2", "ボナ回数ベスト2", [100.4, 99.5, 101.2, 98.2, 104.5, 95.8, 105.1, 101.5, 100.1]],
-  ["db1", "差枚ベスト1", [101.7, 102.3, 104.6, 100.9, 105.2, 101.1, 100.5, 103.9, 97.8]],
-  ["db2", "差枚ベスト2", [101.8, 101.5, 104.5, 107.4, 104.8, 104.1, 106.4, 101.5, 102.4]],
-  ["gb1", "回転数ベスト1", [102.4, 103.3, 102.0, 102.2, 100.9, 98.1, 95.8, 103.0, 104.3]],
-  ["gb2", "回転数ベスト2", [105.6, 101.1, 96.1, 99.9, 104.2, 107.8, 106.3, 102.9, 102.3]],
-  ["dent", "差枚−10,000〜−5,001", [106.5, 99.8, 103.6, 104.6, 103.6, 103.3, 102.1, 102.6, 103.4]],
-];
-function picks(only, min = BASE) {
-  const last = DATES.length - 1, nos = Object.keys(M).map(Number), res = new Map();
-  const add = (no, label, n, v) => { if (!res.has(no)) res.set(no, []); res.get(no).push({ label, n, v }); };
-  const sumOf = (no, key, n) => { let s = 0; for (let i = last - n + 1; i <= last; i++) { const x = M[no][key][i]; if (x == null) return null; s += x; } return s; };
-  STRAT.filter(s => !only || only.includes(s[0])).forEach(([id, label, vals]) => vals.forEach((v, j) => {
-    const n = j + 1;
+/* 狙い目(slot-eye 期待値表。過去1年を土台に、直近90日の値をサンプル数に応じて反映) */
+const BASE = 102.7;
+const STRAT = [["minus","連続差枚マイナス","連続マイナス",[102.2,103.1,103.7,102.2,103.6],[[102.3,102.2],[103.5,103.1],[103.9,103.7],[102.6,102.0],[102.4,104.4]]],["plus","連続差枚プラス","連続プラス",[101.9,102.8,99.9,100.2,103.8],[[101.7,101.9],[102.2,102.9],[98.1,99.9],[98.2,97.3],[98.3,123.7]]],["dw1","差枚ワースト1","差枚ワースト",[100.5,101.5,101.3,101.3,104.1,104.7,104.2,106.9,106.2],[[101.8,98.5],[103.3,99.6],[103.2,99.2],[102.9,99.5],[104.7,104.5],[105.9,105.0],[107.0,103.2],[108.7,108.2],[107.9,107.2]]],["dw2","差枚ワースト2","差枚ワースト",[100.0,101.8,106.3,105.4,106.5,103.8,106.5,100.3,104.1],[[100.8,98.0],[102.9,100.5],[104.4,109.6],[103.7,108.1],[104.3,110.1],[104.5,104.0],[106.8,108.7],[99.9,99.0],[102.0,106.5]]],["bw1","ボナ回数ワースト1","ボナワースト",[100.7,105.7,106.8,106.8,106.0,105.3,104.0,104.8,106.4],[[101.7,99.0],[106.0,107.2],[104.9,110.4],[104.6,110.6],[106.9,107.3],[106.3,106.3],[106.2,103.4],[106.3,105.2],[106.9,108.5]]],["bw2","ボナ回数ワースト2","ボナワースト",[104.6,104.6,106.6,106.1,107.6,103.9,105.6,101.5,103.6],[[105.0,105.5],[104.7,105.6],[106.0,109.2],[104.9,108.8],[104.5,112.6],[105.7,103.4],[105.4,107.6],[104.4,98.7],[104.1,103.8]]],["gw1","回転数ワースト1","回転数ワースト",[103.5,106.5,105.3,111.4,112.5,110.7,109.1,110.4,109.7],[[104.2,103.4],[104.8,109.8],[106.0,106.4],[108.7,118.2],[110.7,119.6],[109.7,116.2],[108.5,113.3],[110.1,115.3],[108.3,115.2]]],["gw2","回転数ワースト2","回転数ワースト",[104.9,105.2,106.8,106.8,104.0,105.0,107.8,104.0,105.8],[[103.8,106.8],[106.2,105.9],[105.0,110.4],[105.3,110.2],[106.5,103.2],[106.0,105.8],[108.1,110.8],[103.8,105.0],[105.3,108.2]]],["db1","差枚ベスト1","差枚ベスト",[101.4,101.7,103.8,101.5,104.0,102.1,102.1,103.7,100.4],[[99.8,101.7],[99.8,102.3],[103.5,104.6],[101.3,100.9],[103.4,105.2],[102.9,101.1],[103.9,100.5],[104.2,103.9],[102.1,97.8]]],["db2","差枚ベスト2","差枚ベスト",[102.2,101.1,103.2,105.3,103.5,102.7,104.3,102.3,103.6],[[102.4,101.8],[99.1,101.5],[101.6,104.5],[104.4,107.4],[102.4,104.8],[100.7,104.1],[102.5,106.4],[103.1,101.5],[106.2,102.4]]],["bb1","ボナ回数ベスト1","ボナベスト",[102.0,102.7,99.2,100.6,100.2,100.4,102.5,102.4,100.5],[[99.4,103.2],[101.1,103.7],[101.4,95.7],[100.0,99.8],[100.8,98.3],[102.4,97.8],[102.3,102.5],[104.3,100.9],[102.0,98.2]]],["bb2","ボナ回数ベスト2","ボナベスト",[101.6,100.4,100.6,100.2,103.2,99.4,103.6,101.7,101.5],[[102.5,100.4],[99.7,99.5],[97.8,101.2],[101.1,98.2],[101.6,104.5],[101.9,95.8],[102.1,105.1],[101.2,101.5],[102.6,100.1]]],["gb1","回転数ベスト1","回転数ベスト",[102.4,103.1,102.0,102.2,101.9,100.8,99.4,103.0,103.5],[[102.2,102.4],[103.1,103.3],[101.3,102.0],[101.9,102.2],[102.6,100.9],[103.3,98.1],[101.6,95.8],[103.2,103.0],[103.1,104.3]]],["gb2","回転数ベスト2","回転数ベスト",[103.6,101.8,98.8,100.7,103.5,105.5,104.5,102.8,102.2],[[101.4,105.6],[102.1,101.1],[99.4,96.1],[100.3,99.9],[103.2,104.2],[104.7,107.8],[103.6,106.3],[102.8,102.9],[101.6,102.3]]],["r:-10000:-5001","差枚-10000〜-5001","差枚レンジ",[104.7,100.3,103.5,104.4,103.6,103.2,102.2,102.6,103.3],[[105.1,106.5],[101.6,99.8],[103.1,103.6],[103.4,104.6],[103.5,103.6],[102.8,103.3],[102.8,102.1],[102.6,102.6],[103.0,103.4]]],["r:-5000:-2001","差枚-5000〜-2001","差枚レンジ",[103.1,104.4,104.4,102.8,104.8],[[102.7,103.1],[103.8,104.5],[103.8,104.5],[103.2,102.8],[103.7,105.0]]],["r:-2000:-1001","差枚-2000〜-1001","差枚レンジ",[103.3,105.5],[[104.0,103.2],[104.6,105.8]]],["r:-1000:-1","差枚-1000〜-1","差枚レンジ",[103.5],[[103.1,103.6]]],["r:0:1000","差枚0〜1000","差枚レンジ",[103.7],[[102.3,104.0]]],["r:1001:2000","差枚1001〜2000","差枚レンジ",[101.0,99.6],[[101.6,100.6],[101.1,98.8]]],["r:2001:5000","差枚2001〜5000","差枚レンジ",[102.3,102.6,102.2,102.1,101.9],[[101.4,102.5],[101.5,102.8],[102.4,102.1],[102.4,102.0],[102.7,101.7]]],["r:5001:10000","差枚5001〜10000","差枚レンジ",[99.8,101.3,100.0,100.7,101.2,101.1,101.9,102.1,101.9],[[101.2,99.2],[101.6,101.2],[101.4,99.7],[102.2,100.4],[102.0,101.0],[102.0,100.9],[102.5,101.8],[102.9,102.0],[102.4,101.8]]],["r:10001:99999999","差枚10001以上","差枚レンジ",[102.2,102.6,103.8,104.1,103.1,102.9,102.7,102.7,102.9],[[100.0,103.2],[101.7,102.9],[101.7,104.3],[101.7,104.6],[102.2,103.2],[102.0,103.0],[102.0,102.8],[101.9,102.8],[101.9,103.0]]],["n:t2000:s","差枚2000枚以上台の隣（番号小）","前日の隣",[101.6],[[103.0,101.4]]],["n:t2000:l","差枚2000枚以上台の隣（番号大）","前日の隣",[102.5],[[103.4,102.4]]],["n:t5000:s","差枚5000枚以上台の隣（番号小）","前日の隣",[101.8],[[103.7,101.3]]],["n:t5000:l","差枚5000枚以上台の隣（番号大）","前日の隣",[102.4],[[103.9,102.1]]],["n:b1:s","差枚ベスト1位台の隣（番号小）","前日の隣",[102.9],[[102.9,103.0]]],["n:b1:l","差枚ベスト1位台の隣（番号大）","前日の隣",[101.7],[[102.0,101.0]]],["n:b2:s","差枚ベスト2位台の隣（番号小）","前日の隣",[102.5],[[104.2,101.3]]],["n:b2:l","差枚ベスト2位台の隣（番号大）","前日の隣",[102.0],[[104.3,100.1]]],["h:m:7000","差枚マイナス×7000G以上","高稼働",[104.5],[[103.1,105.4]]],["h:m:5000","差枚マイナス×5000G以上","高稼働",[103.6],[[102.7,103.7]]],["h:p:7000","差枚プラス×7000G以上","高稼働",[104.1],[[104.4,104.2]]],["h:p:5000","差枚プラス×5000G以上","高稼働",[103.0],[[101.7,103.2]]]];
+const EXP_FAMS = ["差枚ワースト", "回転数ワースト"];
+function evalAll(fams) {
+  const last = DATES.length - 1, nos = Object.keys(M).map(Number).sort((a, b) => a - b), hits = new Map(nos.map(n => [n, []]));
+  const add = (no, s, n) => { const v = s[3][n - 1]; if (v == null || !hits.has(no)) return; hits.get(no).push({ label: s[1], fam: s[2], n, v, raw: s[4][n - 1] }); };
+  const sumOf = (no, key, n) => { let t = 0; for (let i = last - n + 1; i <= last; i++) { const x = i < 0 ? null : M[no][key][i]; if (x == null) return null; t += x; } return t; };
+  const y = no => ({ d: M[no].diff[last], g: M[no].games[last] });
+  STRAT.filter(s => !fams || fams.includes(s[2])).forEach(s => {
+    const id = s[0];
     if (id === "minus" || id === "plus") {
-      nos.forEach(no => { let k = 0; while (k < 5 && (id === "minus" ? M[no].diff[last - k] < 0 : M[no].diff[last - k] > 0)) k++; if (k === n) add(no, label, n, v); });
-    } else if (id === "dent") {
-      nos.forEach(no => { const s = sumOf(no, "diff", n); if (s != null && s >= -10000 && s <= -5001) add(no, label, n, v); });
+      nos.forEach(no => { let k = 0; while (k < s[3].length && last - k >= 0 && (id === "minus" ? M[no].diff[last - k] < 0 : M[no].diff[last - k] > 0)) k++; if (k >= 1) add(no, s, k); });
+    } else if (id.startsWith("r:")) {
+      const [, lo, hi] = id.split(":").map(Number);
+      s[3].forEach((_, j) => nos.forEach(no => { const t = sumOf(no, "diff", j + 1); if (t != null && t >= lo && t <= hi) add(no, s, j + 1); }));
+    } else if (id.startsWith("n:")) {
+      const [, src, side] = id.split(":");
+      const srcs = src === "t2000" ? nos.filter(no => y(no).d >= 2000) : src === "t5000" ? nos.filter(no => y(no).d >= 5000) : [[...nos].sort((a, b) => y(b).d - y(a).d)[src === "b1" ? 0 : 1]];
+      srcs.forEach(no => { const i = nos.indexOf(no), t = nos[side === "s" ? i - 1 : i + 1]; if (t != null) add(t, s, 1); });
+    } else if (id.startsWith("h:")) {
+      const [, sg, g] = id.split(":");
+      nos.forEach(no => { const v = y(no); if (v.g >= +g && (sg === "m" ? v.d < 0 : v.d > 0)) add(no, s, 1); });
     } else {
-      const key = id[0] === "d" ? "diff" : id[0] === "g" ? "games" : "bona", worst = id[1] === "w", list = nos.map(no => [no, sumOf(no, key, n)]).filter(x => x[1] != null).sort((a, b) => worst ? a[1] - b[1] : b[1] - a[1]);
-      const hit = list[+id[2] - 1]; if (hit) add(hit[0], label, n, v);
+      const key = id[0] === "d" ? "diff" : id[0] === "g" ? "games" : "bona", worst = id[1] === "w", rank = +id[2];
+      s[3].forEach((_, j) => { const list = nos.map(no => [no, sumOf(no, key, j + 1)]).filter(x => x[1] != null).sort((a, b) => worst ? a[1] - b[1] : b[1] - a[1]); if (list[rank - 1]) add(list[rank - 1][0], s, j + 1); });
     }
-  }));
-  return [...res].map(([no, hits]) => { hits.sort((a, b) => b.v - a.v); return { no, hits, best: hits[0].v }; })
-    .filter(p => p.best > min).sort((a, b) => b.best - a.best || b.hits.length - a.hits.length);
+  });
+  return nos.map(no => {
+    const h = hits.get(no), byFam = {};
+    h.forEach(x => (byFam[x.fam] = byFam[x.fam] || []).push(x.v - BASE));
+    const lifts = Object.values(byFam).map(a => a.reduce((p, c) => p + c, 0) / a.length);
+    const pos = lifts.filter(l => l > 0).sort((a, b) => b - a), neg = lifts.filter(l => l < 0).sort((a, b) => a - b);
+    const best = BASE + pos.reduce((a, l, i) => a + l * .5 ** i, 0) + neg.reduce((a, l, i) => a + l * .5 ** i, 0);
+    h.sort((a, b) => Math.abs(b.v - BASE) - Math.abs(a.v - BASE));
+    return { no, hits: h, best };
+  }).sort((a, b) => b.best - a.best || b.hits.length - a.hits.length);
 }
-const EXP_IDS = ["gw1", "gw2", "dw1", "dw2"];
+function picks() { return evalAll(); }
 let EXP_CACHE = null;
-const EXP = () => EXP_CACHE || (EXP_CACHE = new Map(picks(EXP_IDS, 0).map(p => [p.no, p])));
-const expLevel = p => p >= 110 ? "r" : p >= 106 ? 4 : p >= 103 ? 3 : p >= 100 ? 2 : 1;
+const EXP = () => EXP_CACHE || (EXP_CACHE = new Map(evalAll(EXP_FAMS).filter(p => p.hits.length).map(p => [p.no, p])));
+const expLevel = p => p >= 108 ? "r" : p >= 105 ? 4 : p >= 103 ? 3 : p >= 101 ? 2 : 1;
 function nextDay() { const [m, d] = DATES[DATES.length - 1].split("/").map(Number), t = new Date(2026, m - 1, d + 1); return (t.getMonth() + 1) + "/" + String(t.getDate()).padStart(2, "0"); }
-const PICK_MIN = 105, PICK_STRONG = 108;
+const PICK_MIN = 104, PICK_STRONG = 107;
 function renderPicks() {
   const box = document.getElementById("picks"); box.textContent = "";
-  const [m, d] = DATES[DATES.length - 1].split("/").map(Number), t = new Date(2026, m - 1, d + 1);
-  const day = (t.getMonth() + 1) + "/" + String(t.getDate()).padStart(2, "0");
-  const lab = document.createElement("span"); lab.className = "label"; lab.textContent = `PICKS ${day} / 期待機械割の高い順 赤 = ${PICK_STRONG}%以上`;
+  const lab = document.createElement("span"); lab.className = "label"; lab.textContent = `PICKS ${nextDay()} / 期待機械割の高い順 赤 = ${PICK_STRONG}%以上`;
   const rows = document.createElement("div"); rows.className = "rows";
+  const fmtHit = x => `${x.label}・過去${x.n}日 ${x.v.toFixed(1)}%(1年 ${x.raw[0] ?? "—"} / 90日 ${x.raw[1] ?? "—"})`;
   picks().filter(p => p.best >= PICK_MIN).forEach((p, i) => {
     const b = document.createElement("button"); b.type = "button"; b.className = "row";
     const pos = document.createElement("span"); pos.className = "pos"; pos.textContent = i + 1;
     const num = document.createElement("span"); num.className = "num"; num.textContent = p.no;
-    const h = p.hits[0], why = document.createElement("span"); why.className = "why";
+    const h = p.hits.find(x => x.v > BASE) || p.hits[0], why = document.createElement("span"); why.className = "why";
     why.textContent = `${h.label}・過去${h.n}日` + (p.hits.length > 1 ? ` ほか${p.hits.length - 1}件` : "");
-    why.title = p.hits.map(x => `${x.label}・過去${x.n}日 ${x.v.toFixed(1)}%`).join("\n");
+    why.title = p.hits.map(fmtHit).join("\n");
     const v = document.createElement("span"); v.className = "val"; v.textContent = p.best.toFixed(1); if (p.best >= PICK_STRONG) v.classList.add("red");
     b.append(pos, num, why, v);
     b.setAttribute("aria-label", `${i + 1}位 ${p.no}番台 期待機械割${p.best.toFixed(1)}% ${why.textContent}`);
@@ -427,7 +427,7 @@ function renderPicks() {
     rows.appendChild(b);
   });
   const note = document.createElement("p"); note.className = "note";
-  note.textContent = `slot-eyeの狙い方別平均(過去90日、11/18時点)を、このツールの差枚・回転数に当てはめています。台ごとに当てはまる条件のうち一番高い機械割を期待値とし、${PICK_MIN}%以上の台だけを表示しています(機種平均は${BASE}%)。ボナ回数はBB+RBの合計で判定しています。`;
+  note.textContent = `slot-eyeの期待値表(ヴァルヴレイヴ2、11/21時点)の全条件を、このツールのデータに当てはめています。各条件の値は、過去1年の値を土台に、直近90日の値をサンプル数に応じて反映したものです(サンプルが少ない条件ほど機種平均${BASE}%に寄せています)。同じ系統の条件は平均し、系統ごとのプラス分を大きい順に1、1/2、1/4…の重みで足して期待値にしています。${PICK_MIN}%以上の台を表示。`;
   box.append(lab, rows, note);
 }
 /* 台リスト */
