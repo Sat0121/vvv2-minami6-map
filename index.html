@@ -17,6 +17,7 @@
   --body: var(--mono); --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Hiragino Sans", "Yu Gothic UI", "Roboto", system-ui, sans-serif;
   --doto: var(--display); --jp-dot: var(--display);
   --ease: cubic-bezier(.2, 0, 0, 1);
+  --ai-ring: #1fae4b;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --primary: #9fcaff; --on-primary: #003060; --primary-container: #0f4a86; --on-primary-container: #d6e4ff;
@@ -25,7 +26,7 @@
   --on-surface: #e2e2e9; --on-surface-var: #c4c6d0; --outline: #8e9099; --outline-var: #44474e;
   --red-ink: #003060;
   --h4: #3d7fcf; --h4-ink: #ffffff; --h3: #1d3c63; --h3-ink: #d6e4ff; --h2: #2a2d33; --h2-ink: #e2e2e9; --h1: #191c20; --h1-ink: #8e9099;
-  --none: #2a2d32; --none-ink: #8e9099; color-scheme: dark;
+  --none: #2a2d32; --none-ink: #8e9099; --ai-ring: #34d26a; color-scheme: dark;
 } }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { background: var(--surface); color: var(--on-surface); font: 400 16px/1.5 var(--body); letter-spacing: -0.01em; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; }
@@ -72,10 +73,11 @@ svg#map { display: block; width: 100%; height: auto; touch-action: manipulation;
 .cell text { text-anchor: middle; dominant-baseline: central; pointer-events: none; font-family: var(--body); }
 .cell .no { font-size: 23px; font-weight: 600; }
 .cell .val { font-size: 21px; }
-.cell.ai path { stroke: var(--primary); stroke-width: 7; stroke-dasharray: 10 6; }
-.cell.sel path { stroke: var(--on-surface); stroke-width: 7; stroke-dasharray: none; }
+.cell .ring { fill: none; stroke: var(--ai-ring); stroke-width: 14; display: none; pointer-events: none; }
+.cell.ai .ring { display: block; }
+.cell.sel path.base { stroke: var(--on-surface); stroke-width: 7; }
 .cell:focus { outline: none; }
-.cell:focus-visible path { stroke: var(--primary); stroke-width: 7; }
+.cell:focus-visible path.base { stroke: var(--primary); stroke-width: 7; }
 .cell.dim { opacity: .18; }
 .ghost { fill: none; stroke: var(--outline); stroke-width: 2; stroke-dasharray: 2 8; stroke-linecap: round; }
 .ghost-label { fill: var(--on-surface-var); font: 400 16px var(--body); text-anchor: middle; dominant-baseline: central; }
@@ -135,7 +137,13 @@ a { color: var(--primary); }
 .chips { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
 .chip { min-height: 64px; padding: 8px 4px; border: 0; border-radius: 16px; background: var(--surface-c-lowest); cursor: pointer; display: grid; place-items: center; align-content: center; gap: 2px; line-height: 1.1; font: 600 17px var(--body); color: var(--on-surface); }
 .chip small { font: 400 12px var(--body); color: var(--on-surface-var); }
-.chip.top { box-shadow: inset 0 0 0 2px var(--primary); }
+.chips { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.chip .cno { font: 600 17px var(--body); }
+.chip.first { grid-column: 1 / -1; min-height: 76px; grid-template-columns: auto 1fr auto; place-items: center start; padding: 10px 20px; gap: 12px; box-shadow: inset 0 0 0 2px var(--ai-ring); }
+.chip.first .cno { font: 700 30px/1 var(--display); letter-spacing: -0.02em; }
+.chip.first small { font: 600 17px var(--body); justify-self: end; color: var(--on-surface); }
+.chip.first.hit small { color: inherit; }
+.chip .rank { font: 600 12px var(--body); padding: 4px 10px; border-radius: 9999px; background: var(--ai-ring); color: #fff; }
 .chip.hit { background: var(--primary); color: var(--on-primary); }
 .chip.hit small { color: inherit; opacity: .9; }
 .ai-sum { font: 400 13px/1.5 var(--body); color: var(--on-surface-var); }
@@ -159,7 +167,7 @@ nav.tabs button[aria-current="page"] .ind { background: var(--secondary-containe
 
 <main class="page" id="page">
   <div class="top">
-    <h1>ヴァルヴレイヴ2</h1>
+    <h1>Valvrave 2</h1>
     <small>プレイランドハッピー南6条店 · 46枚 · <span id="range"></span></small>
   </div>
 
@@ -285,6 +293,7 @@ function layoutCells(island) {
 const svg = document.getElementById("map");
 const cells = new Map(), islandOf = new Map();
 function drawMap() {
+  const defs = el("defs", {}, svg);
   el("path", { class: "ghost", d: sector(335, 425, 12, 136) }, svg);
   el("path", { class: "ghost", d: sector(335, 425, -136, -81) }, svg);
   el("path", { class: "ghost", d: sector(445, 490, 180, 210.6) + "M0 445H420V490H0Z" }, svg);
@@ -293,7 +302,9 @@ function drawMap() {
   ISLANDS.forEach(island => layoutCells(island).forEach(c => {
     islandOf.set(c.no, island);
     const g = el("g", { class: "cell", tabindex: "0", role: "button" }, svg);
-    const path = el("path", { d: c.d }, g);
+    const path = el("path", { d: c.d, class: "base" }, g);
+    const clip = el("clipPath", { id: "clip" + c.no }, defs); el("path", { d: c.d }, clip);
+    el("path", { d: c.d, class: "ring", "clip-path": `url(#clip${c.no})` }, g);
     const no = el("text", { class: "no", x: fx(c.x), y: fx(c.y), textLength: 56, lengthAdjust: "spacingAndGlyphs" }, g);
     no.textContent = c.no;
     const val = el("text", { class: "val", x: fx(c.x) }, g);
@@ -433,8 +444,9 @@ function renderReco() {
   const chips = document.createElement("div"); chips.className = "chips";
   list.forEach((r, i) => {
     const hit = past && r.d > AI_HIT, b = document.createElement("button"); b.type = "button";
-    b.className = "chip" + (hit ? " hit" : !past && i === 0 ? " top" : "");
-    b.append(String(r.no)); const s = document.createElement("small"); s.textContent = past ? fmt(r.d) : (r.p * 100).toFixed(0) + "%"; b.append(s);
+    b.className = "chip" + (i === 0 ? " first" : "") + (hit ? " hit" : "");
+    if (i === 0) { const k = document.createElement("span"); k.className = "rank"; k.textContent = past ? "AIの1位" : "イチオシ"; b.append(k); }
+    const nm = document.createElement("span"); nm.className = "cno"; nm.textContent = r.no; b.append(nm); const s = document.createElement("small"); s.textContent = past ? fmt(r.d) : (r.p * 100).toFixed(0) + "%"; b.append(s);
     b.setAttribute("aria-label", past ? `${r.no}番台 結果${fmt(r.d)}枚` : `推奨${i + 1}位 ${r.no}番台 確率${(r.p * 100).toFixed(0)}%`);
     b.addEventListener("click", () => openSheet(r.no)); chips.appendChild(b);
   });
