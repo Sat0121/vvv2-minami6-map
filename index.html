@@ -423,7 +423,7 @@ function renderReco() {
     const hits = list.filter(r => r.d > 5000).length, avg = list.reduce((a, r) => a + r.d, 0) / list.length;
     sum.append("+5,000枚超え ", strong(`${hits}/5台`), ` · 5台の平均 ${fmt(avg)}枚`);
   } else if (past) sum.textContent = "この日の推奨データはありません。";
-  else { const tr = aiTrack(); sum.append("右下の%は+5,000枚を超える確率の予測です。", tr ? `${tr.days}日間の実績: 1日あたり ` : "", tr ? strong(`${tr.avg.toFixed(2)}台`) : "", tr ? `が+5,000枚超え(ランダムなら${tr.rand.toFixed(2)}台)。日付を選ぶと、その日の推奨と結果を表示します。` : ""); }
+  else { const tr = aiTrack(); sum.append("台番号の下の%は+5,000枚を超える確率の予測です。", tr ? `${tr.days}日間の実績: 1日あたり ` : "", tr ? strong(`${tr.avg.toFixed(2)}台`) : "", tr ? `が+5,000枚超え(ランダムなら${tr.rand.toFixed(2)}台)。日付を選ぶと、その日の推奨と結果を表示します。` : ""); }
   map.append(hd, chips, sum);
   const box = document.getElementById("reco"); box.textContent = "";
   const lab = document.createElement("div"); lab.className = "ai-head"; const t1 = document.createElement("h2"); t1.className = "block-title"; t1.textContent = "AI Recommend"; const s1 = document.createElement("span"); s1.className = "label"; s1.textContent = `明日 ${nextDay()} · 機械学習モデルの上位5台`; lab.append(t1, s1);
