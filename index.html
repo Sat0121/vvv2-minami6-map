@@ -163,6 +163,16 @@ ul.plain { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; fon
 #v-about b { font-weight: 600; }
 .seg.sub { margin-bottom: 14px; }
 nav.tabs button > span:last-child { white-space: nowrap; font-size: 12px; }
+.bat { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.bat > div { border-radius: 20px; padding: 14px; display: grid; gap: 4px; }
+.bat .a { background: var(--primary-container); color: var(--on-primary-container); }
+.bat .g { background: var(--tert-container); color: var(--on-tert-container); }
+.bat .t { font: 600 14px var(--body); display: flex; align-items: center; gap: 6px; }
+.bat .t i { width: 10px; height: 10px; border-radius: 3px; }
+.bat .big { font: 700 34px/1.05 var(--display); letter-spacing: -0.02em; }
+.bat .big small { font: 500 14px var(--body); margin-left: 4px; }
+.bat .sub2 { font: 400 12px/1.45 var(--body); opacity: .85; }
+#batting { margin-bottom: 14px; }
 #gambleMap { background: var(--tert-container); color: var(--on-tert-container); }
 #gambleMap .label, #gambleMap .ai-sum { color: inherit; opacity: .85; }
 #gambleMap .chip.first { box-shadow: inset 0 0 0 2px var(--gamble); }
@@ -195,6 +205,8 @@ nav.tabs button[aria-current="page"] .ind { background: var(--secondary-containe
     <button type="button" data-p="machines">台</button>
     <button type="button" data-p="days">日付</button>
   </div>
+
+  <div class="block" id="batting" hidden></div>
 
   <section class="view" id="v-map">
     <div class="block" id="recoMap"></div>
@@ -517,6 +529,46 @@ function renderSheet() {
 }
 function openSheet(no) { state.sel = state.sel === no ? null : no; renderMap(); renderSheet(); renderMachines(); }
 
+/* Recommendの打率(過去データ) */
+function batting(lastN) {
+  const ks = DATES.filter(d => PRED_HIST[d] || PRED_HIST_G[d]).slice(lastN ? -lastN : 0);
+  const r = { days: ks.length, aHit: 0, aN: 0, aDay: 0, aRand: 0, a10: 0, gHit: 0, gN: 0, gDay: 0, gRand: 0, g10: 0 };
+  ks.forEach(d => {
+    const i = DATES.indexOf(d);
+    const a = PRED_HIST[d] || [], ah = a.filter(x => x[2] > AI_HIT).length;
+    if (a.length) { r.aHit += ah; r.aN += a.length; r.aDay += ah > 0; r.a10 += a.filter(x => x[2] > 10000).length;
+      const el = Object.keys(M).map(Number).filter(no => aiEligible(no, i)); r.aRand += el.filter(no => M[no].diff[i] > AI_HIT).length / el.length * a.length; }
+    const g = PRED_HIST_G[d] || [], gd = gambleDay(i);
+    if (g.length) { const hit = g.filter(x => gd.big.length ? x[2] > 10000 : gd.top2.includes(x[0])).length;
+      r.gHit += hit; r.gN += g.length; r.gDay += hit > 0; r.g10 += g.filter(x => x[2] > 10000).length;
+      r.gRand += (gd.big.length ? gd.big.length : 2) / gd.n * g.length; }
+  });
+  return r;
+}
+function renderBatting() {
+  const box = document.getElementById("batting"); box.textContent = "";
+  const hd = document.createElement("div"); hd.className = "ai-head";
+  const t = document.createElement("h2"); t.className = "block-title"; t.textContent = "Recommendの打率";
+  const all = batting(0), rec = batting(14);
+  const s = document.createElement("span"); s.className = "label"; s.textContent = `${DATES[0]}〜${DATES[LAST]}の${all.days}日`;
+  hd.append(t, s);
+  const grid = document.createElement("div"); grid.className = "bat";
+  const card = (cls, name, color, hit, n, rand, days, dayHit, r14, line2) => {
+    const c = document.createElement("div"); c.className = cls;
+    const tt = document.createElement("span"); tt.className = "t"; const i = document.createElement("i"); i.style.background = color; tt.append(i, name);
+    const big = document.createElement("span"); big.className = "big"; big.textContent = n ? (hit / n * 100).toFixed(1) + "%" : "—";
+    const sm = document.createElement("small"); sm.textContent = `${hit}/${n}台`; big.append(sm);
+    const s1 = document.createElement("span"); s1.className = "sub2"; s1.textContent = `ランダムなら ${n ? (rand / n * 100).toFixed(1) : "—"}% · 1台以上当たった日 ${days ? Math.round(dayHit / days * 100) : 0}%`;
+    const s2 = document.createElement("span"); s2.className = "sub2"; s2.textContent = `直近14日 ${r14} · ${line2}`;
+    c.append(tt, big, s1, s2); return c;
+  };
+  grid.append(
+    card("a", "AI Recommend", "var(--ai-ring)", all.aHit, all.aN, all.aRand, all.days, all.aDay, rec.aN ? (rec.aHit / rec.aN * 100).toFixed(1) + "%" : "—", `万枚 ${all.a10}台`),
+    card("g", "ギャン中 Recommend", "var(--gamble)", all.gHit, all.gN, all.gRand, all.days, all.gDay, rec.gN ? (rec.gHit / rec.gN * 100).toFixed(1) + "%" : "—", `万枚 ${all.g10}台`));
+  const note = document.createElement("p"); note.className = "note";
+  note.textContent = "打率は推奨した台のうち当たった台の割合です。AIは+3,000枚超えで当たり。ギャン中は万枚で当たり、万枚が出なかった日はその日の1位・2位に入れば当たりです。過去の推奨は、どの日もその日より前のデータだけで学習したモデルで出しています。";
+  box.append(hd, grid, note);
+}
 /* ギャン中 Recommend(万枚を最大化。万枚のない日はその日の1位・2位を0.9点で評価) */
 const G_EXCL = new Set([1311, 1312, 1313, 1315, 1316, 2218]);
 function gambleDay(i) {
@@ -767,7 +819,7 @@ function renderDays() {
     const d = DATES[k], s = dayStats(k), b = document.createElement("button"); b.type = "button"; b.className = "row";
     const a = document.createElement("span"); a.className = "num"; a.textContent = d + " " + weekday(d);
     const g = document.createElement("span"); g.className = "hint2"; g.textContent = Math.round(s.games).toLocaleString("ja-JP") + "G";
-    g.textContent += " · +5k " + s.hits; const ph = PRED_HIST[d]; const h = document.createElement("span"); h.className = "hint2" + (ph ? " ai" : ""); h.textContent = ph ? `AI ${ph.filter(x => x[2] > AI_HIT).length}/5` : "AI —";
+    g.textContent += " · +5k " + s.hits; const ph = PRED_HIST[d]; const h = document.createElement("span"); h.className = "hint2" + (ph ? " ai" : ""); const pg = PRED_HIST_G[d], gd = gambleDay(k); h.textContent = (ph ? `AI ${ph.filter(x => x[2] > AI_HIT).length}/5` : "AI —") + (pg ? ` · G ${pg.filter(x => gd.big.length ? x[2] > 10000 : gd.top2.includes(x[0])).length}/5` : "");
     const v = document.createElement("span"); v.className = "val"; v.textContent = s.pay.toFixed(1); if (HOT.has(d)) v.classList.add("red");
     b.append(a, g, h, v);
     b.addEventListener("click", () => { state.day = k; state.mode = "day"; setView("map"); });
@@ -803,6 +855,8 @@ function renderAll() {
   ra.hidden = rg.hidden = !(next || state.mode === "day");
   ["dates", "modeSeg", "notePast"].forEach(id => document.getElementById(id).hidden = next);
   ["reco", "picks", "noteNext"].forEach(id => document.getElementById(id).hidden = !next);
+  document.getElementById("batting").hidden = state.view !== "past";
+  if (state.view === "past") renderBatting();
   if (state.view === "past" && state.pastTab === "map") renderDates();
 }
 
