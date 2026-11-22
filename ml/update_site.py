@@ -14,8 +14,10 @@ for no, g in cur.groupby("machine"):
     m[str(no)] = [col("diff"), col("games"), col("bb"), col("rb")]
 src = {"dates": [pd.Timestamp(d).strftime("%m/%d") for d in dates], "m": m}
 pred = json.load(open("ml/prediction.json"))
+phist = json.load(open("ml/pred_history.json"))
 h = open(html_path, encoding="utf8").read()
 h = re.sub(r"const SRC = \{.*?\};\n", lambda _: "const SRC = " + json.dumps(src, separators=(",", ":")) + ";\n", h, count=1, flags=re.S)
 h = re.sub(r"const PRED = \{.*?\};\n", lambda _: "const PRED = " + json.dumps(pred, ensure_ascii=False, separators=(",", ":")) + ";\n", h, count=1, flags=re.S)
+h = re.sub(r"const PRED_HIST = \{.*?\};\n", lambda _: "const PRED_HIST = " + json.dumps({pd.Timestamp(k).strftime("%m/%d"): v for k, v in phist.items()}, separators=(",", ":")) + ";\n", h, count=1, flags=re.S)
 open(html_path, "w", encoding="utf8").write(h)
 print("dates", len(dates), src["dates"][0], "-", src["dates"][-1], "machines", len(m), "pred for", pred["target"])

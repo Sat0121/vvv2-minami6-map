@@ -22,6 +22,7 @@
 
 ## 毎日の更新
 1. `vvv2_1y.csv` に新しい日の行を追記
-2. `python3 ml/predict.py` (全データで再学習して翌日の順位を `ml/prediction.json` に出力)
-3. `python3 ml/update_site.py index.html` (台マップのデータとおすすめ5台を更新)
-4. 検証し直すときは `python3 ml/backtest.py` と `python3 ml/variants.py`
+2. `python3 ml/history.py`(新しい日の AI Recommend を、その日より前のデータだけで計算して `ml/pred_history.json` に追記)
+3. `python3 ml/predict.py` (全データで再学習して翌日の順位を `ml/prediction.json` に出力)
+4. `python3 ml/update_site.py index.html` (台マップのデータとおすすめ5台を更新)
+5. 検証し直すときは `python3 ml/backtest.py` と `python3 ml/variants.py`
