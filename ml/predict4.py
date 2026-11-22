@@ -50,6 +50,7 @@ if __name__ == "__main__":
         out = dict(target=str(nxt.date()), based_on=str(last.date()), hit=3000, model="v4",
                    ranking=[reason(x) for x in ok.itertuples()],
                    excluded=[dict(no=int(x.machine), prev=None if pd.isna(x.diff_s1) else int(x.diff_s1), why="前日+3000超え" if (x.diff_s1 or 0) > PREV_MAX else "対象外の台") for x in ex.itertuples()])
+        out["probs"] = {str(int(x.machine)): dict(p=round(float(x.p3), 3), p10=round(float(x.p10), 3), prev=None if pd.isna(x.diff_s1) else int(x.diff_s1)) for x in r.itertuples()}
         json.dump(out, open("ml/prediction.json", "w"), ensure_ascii=False)
         for i, o in enumerate(out["ranking"][:8], 1): print(i, o)
         print("除外:", [(e["no"], e["why"]) for e in out["excluded"]])
