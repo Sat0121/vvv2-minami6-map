@@ -78,7 +78,10 @@ svg#map { display: block; width: 100%; height: auto; touch-action: manipulation;
 .cell .no { font-size: 23px; font-weight: 600; }
 .cell .val { font-size: 21px; }
 .cell .ring { fill: none; stroke: var(--ai-ring); stroke-width: 14; display: none; pointer-events: none; }
-.cell.ai .ring { display: block; }
+.cell.ai .ring.a { display: block; }
+.cell .ring.g { stroke: var(--gamble); stroke-width: 14; }
+.cell.gb .ring.g { display: block; }
+.cell.ai.gb .ring.g { stroke-width: 28; }
 .cell.sel path.base { stroke: var(--on-surface); stroke-width: 7; }
 .cell:focus { outline: none; }
 .cell:focus-visible path.base { stroke: var(--primary); stroke-width: 7; }
@@ -194,7 +197,7 @@ nav.tabs button[aria-current="page"] .ind { background: var(--secondary-containe
     </div>
     <div class="map-card"><svg id="map" viewBox="-445 -445 890 960" role="img" aria-label="台の配置図。案内図と同じ向き"></svg></div>
     <ul class="legend" id="legend"></ul>
-    <p class="note">日付の右端の「明日 予測」を選ぶと、明日の各台の+3,000枚を超える確率をヒートマップで表示します(⚠は前日+3,000枚超えの台で、AI Recommendの対象外)。緑の枠はAI Recommendの5台です(日付を選ぶとその日の推奨、選んでいないときは明日の推奨)。期待度は回転数ワースト1・2と差枚ワースト1・2(過去1〜9日)だけを根拠に、slot-eyeの期待値表(1年+直近90日)から計算しています。灰色はどの条件にも当てはまらない台です。セル内の差枚は千枚単位です(+18.7 = 約+18,700枚)。正確な値は台をタップすると出ます。2218は見世物小屋の台で、左下に別枠で表示しています。</p>
+    <p class="note">日付の右端の「明日 予測」を選ぶと、明日の各台の+3,000枚を超える確率をヒートマップで表示します(⚠は前日+3,000枚超えの台で、AI Recommendの対象外)。緑の枠はAI Recommend、オレンジの枠はギャン中 Recommendの5台です(両方に入る台は緑の内側にオレンジの二重枠)(日付を選ぶとその日の推奨、選んでいないときは明日の推奨)。期待度は回転数ワースト1・2と差枚ワースト1・2(過去1〜9日)だけを根拠に、slot-eyeの期待値表(1年+直近90日)から計算しています。灰色はどの条件にも当てはまらない台です。セル内の差枚は千枚単位です(+18.7 = 約+18,700枚)。正確な値は台をタップすると出ます。2218は見世物小屋の台で、左下に別枠で表示しています。</p>
   </section>
 
   <section class="view" id="v-machines" hidden>
@@ -318,7 +321,8 @@ function drawMap() {
     const g = el("g", { class: "cell", tabindex: "0", role: "button" }, svg);
     const path = el("path", { d: c.d, class: "base" }, g);
     const clip = el("clipPath", { id: "clip" + c.no }, defs); el("path", { d: c.d }, clip);
-    el("path", { d: c.d, class: "ring", "clip-path": `url(#clip${c.no})` }, g);
+    el("path", { d: c.d, class: "ring g", "clip-path": `url(#clip${c.no})` }, g);
+    el("path", { d: c.d, class: "ring a", "clip-path": `url(#clip${c.no})` }, g);
     const no = el("text", { class: "no", x: fx(c.x), y: fx(c.y), textLength: 56, lengthAdjust: "spacingAndGlyphs" }, g);
     no.textContent = c.no;
     const val = el("text", { class: "val", x: fx(c.x) }, g);
@@ -329,7 +333,7 @@ function drawMap() {
 }
 const nextLevel = p => p >= .30 ? "r" : p >= .24 ? 4 : p >= .18 ? 3 : p >= .12 ? 2 : 1;
 function renderMap() {
-  const AI_SET = new Set(aiList().map(r => r.no));
+  const AI_SET = new Set(aiList().map(r => r.no)), GB_SET = new Set(gambleList().map(r => r.no));
   cells.forEach((c, no) => {
     const m = M[no], s = STATS[no];
     let fill = "var(--none)", ink = "var(--none-ink)", text = "";
@@ -349,6 +353,7 @@ function renderMap() {
         c.no.setAttribute("y", fx(text ? c.y - 12 : c.y)); c.val.setAttribute("y", fx(c.y + 15));
     c.g.classList.toggle("sel", state.sel === no);
     c.g.classList.toggle("ai", AI_SET.has(no));
+    c.g.classList.toggle("gb", GB_SET.has(no));
     c.g.setAttribute("aria-label", `${no}番台 ${text || "データなし"}`);
   });
 }
@@ -408,7 +413,7 @@ function renderLegend() {
     const li = document.createElement("li"), i = document.createElement("i");
     i.style.background = l === "none" ? "var(--none)" : levelColors(l)[0]; li.append(i, t); ul.appendChild(li);
   });
-  if (state.mode === "next") { const li = document.createElement("li"); li.textContent = "⚠ 前日+3,000枚超え · 緑の枠はAI Recommend"; ul.appendChild(li); }
+  { const li = document.createElement("li"); li.textContent = (state.mode === "next" ? "⚠ 前日+3,000枚超え · " : "") + "緑の枠 AI · オレンジの枠 ギャン中"; ul.appendChild(li); }
 }
 
 /* 台の詳細 */
@@ -471,6 +476,7 @@ function gambleTrack() {
     else { s += 0.9 * picks.filter(no => g.top2.includes(no)).length; r += 0.9 * 5 * 2 / g.n; } });
   return { days: ks.length, avg: s / ks.length, rand: r / ks.length };
 }
+const gambleList = () => state.mode === "day" ? (PRED_HIST_G[DATES[state.day]] || []).map(([no, p10, d]) => ({ no, p10, d })) : (PRED_G.ranking || []).slice(0, 5);
 function renderGamble() {
   const box = document.getElementById("gambleMap"); if (!box) return; box.textContent = "";
   const past = state.mode === "day", i = state.day;
