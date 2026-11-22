@@ -158,6 +158,11 @@ a { color: var(--primary); }
 .skip { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font: 400 12px var(--body); }
 .skip span { padding: 2px 8px; border-radius: 6px; background: var(--surface-c-lowest); color: var(--on-surface-var); }
 /* ナビゲーションバー(M3): アイコンの後ろにアクティブインジケータ */
+ul.plain { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 15px; }
+#v-about p { margin: 0; font-size: 15px; line-height: 1.6; }
+#v-about b { font-weight: 600; }
+.seg.sub { margin-bottom: 14px; }
+nav.tabs button > span:last-child { white-space: nowrap; font-size: 12px; }
 #gambleMap { background: var(--tert-container); color: var(--on-tert-container); }
 #gambleMap .label, #gambleMap .ai-sum { color: inherit; opacity: .85; }
 #gambleMap .chip.first { box-shadow: inset 0 0 0 2px var(--gamble); }
@@ -185,24 +190,31 @@ nav.tabs button[aria-current="page"] .ind { background: var(--secondary-containe
     <small>プレイランドハッピー南6条店 · 46枚 · <span id="range"></span></small>
   </div>
 
+  <div class="seg sub" id="pastSeg" role="group" aria-label="過去データの表示" hidden>
+    <button type="button" data-p="map">マップ</button>
+    <button type="button" data-p="machines">台</button>
+    <button type="button" data-p="days">日付</button>
+  </div>
+
   <section class="view" id="v-map">
     <div class="block" id="recoMap"></div>
     <div class="block" id="gambleMap"></div>
     <div class="dates" id="dates" role="group" aria-label="日付"></div>
     <div class="stats" id="dayStats"></div>
-    <div class="seg" role="group" aria-label="マップの表示内容">
+    <div class="seg" id="modeSeg" role="group" aria-label="マップの表示内容">
       <button id="mExp" type="button" aria-pressed="true">期待度</button>
       <button id="mDay" type="button" aria-pressed="false">この日の差枚</button>
       <button id="mAll" type="button" aria-pressed="false"><span class="nd"></span>日の機械割</button>
     </div>
     <div class="map-card"><svg id="map" viewBox="-445 -445 890 960" role="img" aria-label="台の配置図。案内図と同じ向き"></svg></div>
     <ul class="legend" id="legend"></ul>
-    <p class="note">日付の右端の「明日 予測」を選ぶと、明日の推奨台をマップ上で色分けし(緑がAI、オレンジがギャン中、両方の台は斜めに半分ずつ)、その下にそれぞれの5台を表示します。⚠は前日+3,000枚超えの台です。緑の枠はAI Recommend、オレンジの枠はギャン中 Recommendの5台です(両方に入る台は緑の内側にオレンジの二重枠)(日付を選ぶとその日の推奨、選んでいないときは明日の推奨)。期待度は回転数ワースト1・2と差枚ワースト1・2(過去1〜9日)だけを根拠に、slot-eyeの期待値表(1年+直近90日)から計算しています。灰色はどの条件にも当てはまらない台です。セル内の差枚は千枚単位です(+18.7 = 約+18,700枚)。正確な値は台をタップすると出ます。2218は見世物小屋の台で、左下に別枠で表示しています。</p>
+    <p class="note" id="noteNext">緑がAI Recommend、オレンジがギャン中 Recommendの台で、両方に入る台は斜めに半分ずつ塗っています。⚠は前日+3,000枚超えの台です。台をタップすると、その台の過去の成績が出ます。2218は見世物小屋の台で、左下に別枠で表示しています。</p>
+    <div class="block" id="reco"></div>
+    <div class="block" id="picks"></div>
+    <p class="note" id="notePast">日付を選ぶと、その日の差枚と、その日にAI(緑の枠)とギャン中(オレンジの枠)が推奨していた台を表示します。両方に入る台は緑の内側にオレンジの二重枠です。期待度は回転数ワースト1・2と差枚ワースト1・2(過去1〜9日)だけを根拠に、slot-eyeの期待値表(1年+直近90日)から計算しています。灰色はどの条件にも当てはまらない台です。セル内の差枚は千枚単位です(+18.7 = 約+18,700枚)。正確な値は台をタップすると出ます。2218は見世物小屋の台で、左下に別枠で表示しています。</p>
   </section>
 
   <section class="view" id="v-machines" hidden>
-    <div class="block" id="reco"></div>
-    <div class="block" id="picks"></div>
     <div class="search"><input id="q" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="台番検索 1350" aria-label="台番検索"></div>
     <div class="sorts" id="sorts" role="group" aria-label="並び順"></div>
     <div class="rows" id="machineList"></div>
@@ -222,14 +234,59 @@ nav.tabs button[aria-current="page"] .ind { background: var(--secondary-containe
     <p class="note">41台×41日分(10/10〜11/21)をslot-eyeから反映。日別の差枚・回転数・BB・RBの合計は元サイトと照合済みです。台番号が現在の配置になったのは10/10からです。1351の10/21(+19,000枚 / 737G)は純増と合わないため要確認です。</p>
   </section>
 
+  <section class="view" id="v-about" hidden>
+    <div class="block">
+      <h2 class="block-title">2つのRecommend</h2>
+      <p><b>AI Recommend</b>は、明日+3,000枚を超えそうな台を5台選びます。前日に+3,000枚を超えた台と、1311〜1316・2218(見世物小屋)は候補から外しています。</p>
+      <p><b>ギャン中 Recommend</b>は、万枚(+10,000枚超え)が出る台を5台に入れることだけを目指します。前日の差枚では台を外さないので、据え置き狙いの台も入ります(⚠が付きます)。</p>
+      <p class="note">どちらも、配置変更前も含む過去1年分(約1.6万台・日)の差枚・回転数・ボーナス回数で学習した機械学習モデルです。データが増えたら学習し直します。</p>
+    </div>
+    <div class="block">
+      <h2 class="block-title">マップの見方</h2>
+      <ul class="plain">
+        <li><b style="color:var(--ai-ring)">緑</b> AI Recommendの台</li>
+        <li><b style="color:var(--gamble)">オレンジ</b> ギャン中 Recommendの台(両方に入る台は斜めに半分ずつ)</li>
+        <li><b>⚠</b> 前日に+3,000枚を超えた台</li>
+        <li><b>大きいカード</b> そのモデルの1位</li>
+      </ul>
+      <p class="note">「過去データ」で日付を選ぶと、その日にそれぞれが推奨していた台と結果が枠で出ます。過去の推奨は、その日より前のデータだけで学習したモデルで出しているので、当日に見た場合と同じ内容です。</p>
+    </div>
+    <div class="block">
+      <h2 class="block-title">AI Recommendの決め方</h2>
+      <p>次の6つを、候補台の中での順位にして同じ重みで足し、上位5台を選びます。</p>
+      <ul class="plain">
+        <li>+3,000枚・+5,000枚・万枚を超える確率(勾配ブースティング)</li>
+        <li>上振れの大きさ(差枚の上位10%点の予測)</li>
+        <li>直近7日の回転数の少なさ</li>
+        <li>連続マイナスの日数</li>
+      </ul>
+      <p class="note">評価は「+3,000枚超えの台数+2×万枚の台数−推奨から漏れた万枚台の数」。1/15〜11/21の304日を、その日より前のデータだけで予測して確かめると、1日の評価点は0.63(ランダム0.10)、+3,000枚超えは5台中1.04台(ランダム0.89台)、万枚の捕捉率は23%(ランダム14%)でした。</p>
+    </div>
+    <div class="block">
+      <h2 class="block-title">ギャン中 Recommendの決め方</h2>
+      <p>次の5つを同じ重みで足して上位5台を選びます。</p>
+      <ul class="plain">
+        <li>万枚、または万枚のない日の1位・2位になる確率(専用モデル)</li>
+        <li>万枚の確率</li>
+        <li>上振れの大きさ(差枚の上位5%点の予測)</li>
+        <li>直近7日の回転数の少なさ、連続マイナスの日数</li>
+      </ul>
+      <p class="note">評価は、万枚が出た日は推奨に入った万枚台1台につき1点、万枚が出なかった日はその日の1位・2位が入っていれば0.9点ずつ。304日の検証で1日0.40点(ランダム0.24点)でした。AI Recommendと同じ手がかりが効くため、5台のうち平均3台ほどが重なります。</p>
+    </div>
+    <div class="block">
+      <h2 class="block-title">注意</h2>
+      <p class="note">スロットの結果は設定以外のブレが大きく、どちらのRecommendも当たらない日の方が多いです。確率を少し上げるための参考として使ってください。データはslot-eyeから取得し、日ごとの合計を元サイトと照合しています。</p>
+    </div>
+  </section>
+
 </main>
 
 <aside class="sheet" id="sheet" hidden aria-live="polite"></aside>
 
 <nav class="tabs" aria-label="画面"><div>
-  <button type="button" data-v="map"><span class="ind"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/></svg></span><span>マップ</span></button>
-  <button type="button" data-v="machines"><span class="ind"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg></span><span>台</span></button>
-  <button type="button" data-v="days"><span class="ind"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span>日付</span></button>
+  <button type="button" data-v="next"><span class="ind"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/></svg></span><span>明日の狙い台</span></button>
+  <button type="button" data-v="past"><span class="ind"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span>過去データ</span></button>
+  <button type="button" data-v="about"><span class="ind"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/></svg></span><span>Recommendの説明</span></button>
 </div></nav>
 
 <script>
@@ -257,7 +314,7 @@ const ISLANDS = [
 const isValidNo = n => !/[49]/.test(String(n));
 const nosBetween = (a, b) => { const o = []; for (let n = a; n <= b; n++) if (isValidNo(n)) o.push(n); return o; };
 
-const state = { day: DATES.length - 1, mode: "exp", sel: null, view: "map", sort: "pay", q: "" };
+const state = { day: DATES.length - 1, mode: "next", pastMode: "day", pastTab: "map", sel: null, view: "next", sort: "pay", q: "" };
 
 /* 集計 */
 function statsOf(no) {
@@ -370,14 +427,6 @@ function renderDates() {
     b.addEventListener("click", () => { state.day = k; state.mode = "day"; renderAll(); });
     box.appendChild(b);
   });
-  if (PRED.target) {
-    const b = document.createElement("button"); b.type = "button"; b.className = "date next";
-    b.setAttribute("aria-pressed", state.mode === "next");
-    b.append(nextDay()); const s = document.createElement("span"); s.textContent = "明日 予測"; b.append(s);
-    b.setAttribute("aria-label", `明日 ${nextDay()} のAI予測ヒートマップ`);
-    b.addEventListener("click", () => { state.mode = "next"; renderAll(); });
-    box.appendChild(b);
-  }
   const cur = state.mode === "next" ? box.lastElementChild : box.children[state.day];
   if (cur) box.scrollLeft = cur.offsetLeft - box.clientWidth / 2 + cur.offsetWidth / 2;
 }
@@ -729,33 +778,44 @@ function renderDays() {
 /* 画面切替 */
 document.getElementById("range").textContent = DATES[0] + "–" + DATES[LAST];
 document.querySelectorAll(".nd").forEach(e => e.textContent = DATES.length);
-const VIEWS = ["map", "machines", "days"];
+const VIEWS = ["next", "past", "about"], OLD = { map: "map", machines: "machines", days: "days" };
 function setView(v, push = true) {
   state.view = v;
-  VIEWS.forEach(x => document.getElementById("v-" + x).hidden = x !== v);
+  if (v === "next") state.mode = "next"; else if (state.mode === "next") state.mode = state.pastMode;
+  const sec = v === "next" ? "map" : v === "past" ? state.pastTab : "about";
+  ["map", "machines", "days", "about"].forEach(x => document.getElementById("v-" + x).hidden = x !== sec);
+  document.getElementById("pastSeg").hidden = v !== "past";
+  document.querySelectorAll("#pastSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === state.pastTab));
   document.querySelectorAll("nav.tabs button").forEach(b => { if (b.dataset.v === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
-  if (push) { try { location.hash = v; } catch (e) {} window.scrollTo(0, 0); }
+  if (push) { try { location.hash = v === "past" ? state.pastTab : v; } catch (e) {} window.scrollTo(0, 0); }
   renderAll();
 }
 function renderAll() {
+  const next = state.mode === "next";
+  if (!next) state.pastMode = state.mode;
   document.getElementById("mExp").setAttribute("aria-pressed", state.mode === "exp");
   document.getElementById("mDay").setAttribute("aria-pressed", state.mode === "day");
   document.getElementById("mAll").setAttribute("aria-pressed", state.mode === "all");
   renderDayStats(); renderLegend(); renderMap(); renderSheet(); renderMachines(); renderReco();
-  { const sec = document.getElementById("v-map"), ra = document.getElementById("recoMap"), rg = document.getElementById("gambleMap"), lgd = document.getElementById("legend");
-    if (state.mode === "next") { sec.insertBefore(ra, lgd.nextSibling); sec.insertBefore(rg, ra.nextSibling); }
-    else { sec.insertBefore(rg, sec.firstChild); sec.insertBefore(ra, rg); } }
-  if (state.view === "map") renderDates();
+  const sec = document.getElementById("v-map"), ra = document.getElementById("recoMap"), rg = document.getElementById("gambleMap"), lgd = document.getElementById("legend");
+  if (next) { sec.insertBefore(ra, lgd.nextSibling); sec.insertBefore(rg, ra.nextSibling); }
+  else { sec.insertBefore(rg, sec.firstChild); sec.insertBefore(ra, rg); }
+  ra.hidden = rg.hidden = !(next || state.mode === "day");
+  ["dates", "modeSeg", "notePast"].forEach(id => document.getElementById(id).hidden = next);
+  ["reco", "picks", "noteNext"].forEach(id => document.getElementById(id).hidden = !next);
+  if (state.view === "past" && state.pastTab === "map") renderDates();
 }
 
 drawMap(); renderSorts(); renderDays(); renderPicks();
 document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => setView(b.dataset.v)));
+document.querySelectorAll("#pastSeg button").forEach(b => b.addEventListener("click", () => { state.pastTab = b.dataset.p; setView("past"); }));
 document.getElementById("mExp").addEventListener("click", () => { state.mode = "exp"; renderAll(); });
 document.getElementById("mDay").addEventListener("click", () => { state.mode = "day"; renderAll(); });
 document.getElementById("mAll").addEventListener("click", () => { state.mode = "all"; renderAll(); });
 document.getElementById("q").addEventListener("input", e => { state.q = e.target.value.replace(/\D/g, ""); renderMachines(); });
-window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (VIEWS.includes(h) && h !== state.view) setView(h, false); });
-const h0 = location.hash.slice(1); setView(VIEWS.includes(h0) ? h0 : "map", false);
+const route = hs => { if (VIEWS.includes(hs)) return [hs]; if (OLD[hs]) { state.pastTab = OLD[hs]; return ["past"]; } return ["next"]; };
+window.addEventListener("hashchange", () => { const [v] = route(location.hash.slice(1)); setView(v, false); });
+setView(route(location.hash.slice(1))[0], false);
 </script>
 
 </body></html>
