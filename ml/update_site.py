@@ -19,5 +19,10 @@ h = open(html_path, encoding="utf8").read()
 h = re.sub(r"const SRC = \{.*?\};\n", lambda _: "const SRC = " + json.dumps(src, separators=(",", ":")) + ";\n", h, count=1, flags=re.S)
 h = re.sub(r"const PRED = \{.*?\};\n", lambda _: "const PRED = " + json.dumps(pred, ensure_ascii=False, separators=(",", ":")) + ";\n", h, count=1, flags=re.S)
 h = re.sub(r"const PRED_HIST = \{.*?\};\n", lambda _: "const PRED_HIST = " + json.dumps({pd.Timestamp(k).strftime("%m/%d"): v for k, v in phist.items()}, separators=(",", ":")) + ";\n", h, count=1, flags=re.S)
+import os
+if os.path.exists("ml/prediction_g.json"):
+    pg = json.load(open("ml/prediction_g.json")); hg = json.load(open("ml/pred_history_g.json"))
+    h = re.sub(r"const PRED_G = \{.*?\};\n", lambda _: "const PRED_G = " + json.dumps(pg, ensure_ascii=False, separators=(",", ":")) + ";\n", h, count=1, flags=re.S)
+    h = re.sub(r"const PRED_HIST_G = \{.*?\};\n", lambda _: "const PRED_HIST_G = " + json.dumps({pd.Timestamp(k).strftime("%m/%d"): v for k, v in hg.items()}, separators=(",", ":")) + ";\n", h, count=1, flags=re.S)
 open(html_path, "w", encoding="utf8").write(h)
 print("dates", len(dates), src["dates"][0], "-", src["dates"][-1], "machines", len(m), "pred for", pred["target"])
