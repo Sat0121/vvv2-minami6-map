@@ -16,7 +16,7 @@ def load(path="vvv2_1y.csv"):
 
 def build(df):
     days = sorted(df["date"].unique())
-    piv = {k: df.pivot(index="date", columns="machine", values=k).reindex(days) for k in ("diff", "games", "bona")}
+    piv = {k: df.pivot(index="date", columns="machine", values=k).reindex(days) for k in ("diff", "games", "bona", "rb")}
     D, G, B = piv["diff"], piv["games"], piv["bona"]
     present = D.notna()
     feats = {}
@@ -26,6 +26,12 @@ def build(df):
         feats[f"diff_s{n}"] = roll(D, n)
         feats[f"games_s{n}"] = roll(G.fillna(0), n).where(roll(present.astype(float), n) == n)
         feats[f"bona_s{n}"] = roll(B, n)
+    R = piv["rb"]
+    for n in (1, 3, 7):
+        g = roll(G.fillna(0), n); b = roll(B, n)
+        feats[f"bprob_s{n}"] = (b / g.replace(0, np.nan))          # ボーナス確率(回数/回転)
+        feats[f"rbshare_s{n}"] = roll(R, n) / b.replace(0, np.nan)  # ボーナスのうちRBの割合
+    feats["bprob_m30"] = (B.shift(1).rolling(30, min_periods=5).sum() / G.shift(1).rolling(30, min_periods=5).sum())
     feats["games_m30"] = G.shift(1).rolling(30, min_periods=5).mean()
     feats["diff_m30"] = D.shift(1).rolling(30, min_periods=5).mean()
     feats["hit5k_r30"] = (D > TARGET).astype(float).where(present).shift(1).rolling(30, min_periods=5).mean()
@@ -66,7 +72,7 @@ def build(df):
     F = F.join(G.stack(future_stack=True).rename("y_games"))
     F = F.reset_index()
     # その日の中での順位(パーセンタイル): ワースト/ベスト系の代わり
-    rank_cols = [c for c in F.columns if c.startswith(("diff_s", "games_s", "bona_s"))] + ["games_m30", "diff_m30", "pay_1"]
+    rank_cols = [c for c in F.columns if c.startswith(("diff_s", "games_s", "bona_s", "bprob_", "rbshare_"))] + ["games_m30", "diff_m30", "pay_1"]
     for c in rank_cols:
         F[c + "_rk"] = F.groupby("date")[c].rank(pct=True)
         F[c + "_rkmin"] = F.groupby("date")[c].rank(method="min")  # 1=ワースト1
