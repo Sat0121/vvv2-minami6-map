@@ -63,8 +63,8 @@
 誤差は±0.05程度。8通りを比べて選んだので、実際の効き目は少し小さめと見る。
 なお、7種類の部品の重みを総当たり(2,186通り)で前半に合わせると、後半では旧モデルと差がなくなった(ml/search3.py、過学習)。そのため重みは調整せず等重みにしている。
 
-## 毎日の更新
-1. `vvv2_1y.csv` に新しい日の行を追記
+## 毎日の更新（毎朝7時台の定期実行）
+1. みんレポの機種ページ（Lパチスロ革命機ヴァルヴレイヴ2）から前日分を取り、`python3 ml/add_minrepo.py YYYY-MM-DD "台番号|差枚|G数|BB|RB ..."` で `vvv2_1y.csv` に追記
 2. `python3 ml/predict4.py history`(10/10以降の各日の推奨を、その日より前のデータだけで計算し直して `ml/pred_history.json` に保存。約1分)
 3. `python3 ml/predict4.py`(全データで学習して翌日の推奨を `ml/prediction.json` に出力)
 4. `python3 ml/update_site.py index.html`
@@ -98,3 +98,6 @@
 
 ## 毎日の更新
 `python3 ml/predict_g.py history` と `python3 ml/predict_g.py` を実行してから `python3 ml/update_site.py index.html`。
+
+## みんレポのG数の換算
+slot-eye の回転数はボーナス・AT中を含まない。11/20・11/21 の全台照合で `slot-eye回転数 ≒ みんレポG数 − 17.6×BB − 12.6×RB`（誤差±70G程度、別日で確認）。差枚は±50枚以内、BB・RBは一致。
