@@ -8,3 +8,9 @@
 - 日付: 日別機械割と台×日付マトリクス
 
 データ: 10/10以降(現在の台配置になってからの全日、差枚・回転数・BB・RB)。11/21までは slot-eye、11/22以降は みんレポ(min-repo.com)から毎朝の定期実行で `ml/add_minrepo.py` を使って追記(回転数は slot-eye の数え方に換算、換算前の値は data/minrepo_raw.csv)。生データは data/ にあります。狙い方別の機械割は slot-eye の過去90日集計(11/18時点)。
+
+## 店のポスター
+
+マップ画面に、その日(明日の狙い台なら対象日、過去データなら選んだ日)の店のポスターを折りたたみで表示します。出典は AIPOS「ポスター情報」(https://hokkaido-aipos.com/archives/category/ポスター情報)の「札幌近郊ポスター一覧」の「ハッピー南六条」。画像は保存せず、AIPOSの画像URLをそのまま表示します(`posters.json` は日付・記事URL・画像URLだけ、直近90日分)。
+
+更新: 内蔵ブラウザで AIPOS のポスター情報ページを開いて `ml/aipos_posters.js` の中身を実行 → 出てきた行を `python3 ml/add_posters.py -` に渡す → `python3 ml/update_site.py index.html` で index.html に埋め込む → push。10/26〜11/26 の分は 11/26 に取り込み済み。
