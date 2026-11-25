@@ -11,6 +11,6 @@
 
 ## 店のポスター
 
-マップ画面に、その日(明日の狙い台なら対象日、過去データなら選んだ日)の店のポスターを折りたたみで表示します。出典は AIPOS「ポスター情報」(https://hokkaido-aipos.com/archives/category/ポスター情報)の「札幌近郊ポスター一覧」の「ハッピー南六条」。画像は保存せず、AIPOSの画像URLをそのまま表示します(`posters.json` は日付・記事URL・画像URLだけ、直近90日分)。
+マップ画面に、その日(明日の狙い台なら対象日、過去データなら選んだ日)の店のポスターを折りたたみで表示します。出典は AIPOS「ポスター情報」(https://hokkaido-aipos.com/archives/category/ポスター情報)の「札幌近郊ポスター一覧」の「ハッピー南六条」。画像は保存せず、AIPOSの画像URLをそのまま表示します(`posters.json` は日付・記事URL・画像URLだけ。古い日も消さない)。
 
-更新: 内蔵ブラウザで AIPOS のポスター情報ページを開いて `ml/aipos_posters.js` の中身を実行 → 出てきた行を `python3 ml/add_posters.py -` に渡す → `python3 ml/update_site.py index.html` で index.html に埋め込む → push。10/26〜11/26 の分は 11/26 に取り込み済み。
+更新: 内蔵ブラウザで AIPOS のポスター情報ページを開いて `ml/aipos_posters.js` の中身を実行 → 出てきた行を `python3 ml/add_posters.py -` に渡す → `python3 ml/update_site.py index.html` で index.html に埋め込む → push。現配置の全日(10/10〜)の分は 11/26 に取り込み済み。
